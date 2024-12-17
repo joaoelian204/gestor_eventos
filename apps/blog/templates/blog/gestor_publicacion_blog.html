@@ -55,7 +55,7 @@
                         {% endif %}
                     </td>
                     <td><i class="fas fa-eye text-info me-1"></i>{{ publicacion.visualizaciones }}</td>
-                    <td><i class="fas fa-heart text-danger me-1"></i>{{ publicacion.total_me_gusta }}</td>
+                    <td><i class="fas fa-heart text-danger me-1"></i>{{ publicacion.total_me_gustas }}</td>
                     <td><i class="fas fa-user-circle text-primary me-1"></i>{{ publicacion.autor }}</td>
                     <td>
                         <a href="{% url 'editar_publicacion' publicacion.id %}" class="btn btn-sm btn-warning me-2" title="Editar publicación">
