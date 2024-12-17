@@ -43,20 +43,33 @@ def dashboard(request):
 def gestion_reservas(request):
     # Actualizar el estado y observación si se recibe una solicitud POST
     if request.method == 'POST':
-        reserva_id = request.POST.get('reserva_id')
-        nuevo_estado = request.POST.get('estado')
-        observacion = request.POST.get('observacion')
+        try:
+            reserva_id = request.POST.get('reserva_id')
+            nuevo_estado = request.POST.get('estado')
+            observacion = request.POST.get('observacion')
+            
+            reserva = get_object_or_404(Alquiler, id=reserva_id)
+            
+            if nuevo_estado:
+                reserva.estado = nuevo_estado
+            if observacion:
+                reserva.observacion = observacion
+            
+            reserva.save()
+            messages.success(request, 'La reserva se actualizó correctamente.')
+            return redirect('gestion_reservas')
         
-        reserva = get_object_or_404(Alquiler, id=reserva_id)
-        
-        if nuevo_estado:
-            reserva.estado = nuevo_estado
-        if observacion:
-            reserva.observacion = observacion
-        
-        reserva.save()
-        messages.success(request, 'La reserva se actualizó correctamente.')
-        return redirect('gestion_reservas')
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error al actualizar la reserva: {str(e)}')
+            return redirect('gestion_reservas')
+    
+    # Obtener todas las reservas
+    reservas_list = Alquiler.objects.all().order_by('-fecha_hora_reserva')
+    paginator = Paginator(reservas_list, 10)
+    page_number = request.GET.get('page')
+    reservas = paginator.get_page(page_number)
+
+    return render(request, 'dueño/gestion_reservas.html', {'reservas': reservas})
 
 @user_passes_test(es_dueño)
 def gestion_eventos(request):
