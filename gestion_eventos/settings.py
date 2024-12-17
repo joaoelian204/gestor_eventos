@@ -137,7 +137,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Configuración de archivos multimedia
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
 
 # ============================
 # CLOUDINARY CONFIGURATION
