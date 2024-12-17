@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pagina_principal/pagina_principal.css' %}">
+{% endblock %}
+
+{% block title %}Bienvenido a {{ negocio.nombre|default:"Tu Negocio" }}{% endblock %}
+
+{% block content %}
+
+<!-- ============================
+        Sección de Bienvenida (Hero)
+        ============================ -->
+<div class="hero-section position-relative text-center text-white py-5">
+    <!-- Imagen de fondo insertada en el HTML -->
+    <img src="{% static 'img/pagina_principal/R .jpeg' %}" class="w-100 h-100 position-absolute top-0 start-0" alt="Hero Background" style="object-fit: cover; z-index: 0;">
+
+    <div class="overlay"></div>
+    <div class="container position-relative z-index-1">
+        <h1 class="mb-4 fw-bold text-shadow display-3">
+            <i class="fas fa-building me-2"></i> Bienvenido a {{ negocio.nombre|default:"Tu Negocio" }}
+        </h1>
+        <p class="lead mb-4 text-shadow fs-4">
+            <i class="fas fa-calendar-alt me-2"></i> Tu mejor opción para gestionar eventos sociales y celebraciones.
+        </p>
+        
+        {# Mostrar botones de inicio de sesión y registro si el usuario no está autenticado #}
+        {% if not user.is_authenticated %}
+            <div class="mb-4">
+                <a href="{% url 'login_usuario' %}" class="btn btn-primary btn-lg me-3 shadow-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                </a>
+                <a href="{% url 'registro_usuario' %}" class="btn btn-success btn-lg shadow-lg">
+                    <i class="fas fa-user-plus me-2"></i> Registrarse
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ============================
+        Sección de Introducción
+        ============================ -->
+<div class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h2 class="fw-bold text-cerulean mb-4">
+                <i class="fas fa-star me-2"></i> ¿Por qué elegirnos?
+            </h2>
+            <p class="fs-5 text-muted">
+                Ofrecemos una plataforma integral para planificar, gestionar y disfrutar de tus eventos sin preocupaciones. Servicios personalizados, atención de calidad y una experiencia inigualable.
+            </p>
+            <ul class="list-unstyled fs-5">
+                <li><i class="fas fa-check-circle text-success me-2"></i> Reservas fáciles y rápidas</li>
+                <li><i class="fas fa-check-circle text-success me-2"></i> Variedad de servicios y combos</li>
+                <li><i class="fas fa-headset text-success me-2"></i> Atención al cliente 24/7</li>
+            </ul>
+        </div>
+        <div class="col-md-6 text-center">
+            <img src="{% static 'img/pagina_principal/home.jpg' %}" class="img-fluid rounded shadow-lg" alt="Eventos">
+        </div>
+    </div>
+</div>
+
+<!-- ============================
+        Carrusel de Servicios
+        ============================ -->
+<div class="container my-5">
+    <h2 class="text-center mb-5 fw-bold text-cerulean display-5">
+        <i class="fas fa-concierge-bell me-2"></i> Nuestros Servicios
+    </h2>
+
+    <div id="carouselServicios" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for servicio in servicios %}
+                {% if forloop.counter0|divisibleby:3 %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div class="row justify-content-center">
+                {% endif %}
+
+                <div class="col-md-4 mb-4">
+                    <div class="card border-0 shadow-lg service-card h-100">
+                        <a href="{% if user.is_authenticated %}{% url 'catalogo_servicios' %}{% else %}{% url 'login_usuario' %}{% endif %}" class="text-decoration-none text-dark">
+                            {% if servicio.imagen_referencial %}
+                                <img src="{{ servicio.imagen_referencial.url }}" class="card-img-top img-fixed" alt="{{ servicio.titulo }}">
+                            {% else %}
+                                <img src="https://source.unsplash.com/400x250/?service,event" class="card-img-top img-fixed" alt="{{ servicio.titulo }}">
+                            {% endif %}
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-bold text-cerulean">
+                                    <i class="fas fa-cogs me-2"></i>{{ servicio.titulo }}
+                                </h5>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                {% if forloop.counter|divisibleby:3 or forloop.last %}
+                    </div>
+                </div>
+                {% endif %}
+            {% empty %}
+            <p class="text-center text-muted">
+                <i class="fas fa-exclamation-circle me-2"></i> No hay servicios disponibles en este momento.
+            </p>
+            {% endfor %}
+        </div>
+
+        <!-- Controles del Carrusel para navegar entre los elementos -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselServicios" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselServicios" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
+</div>
+
+{% endblock %}
+
+

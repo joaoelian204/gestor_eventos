@@ -1,0 +1,162 @@
+/* ============================
+    Variables Globales
+   ============================ */
+   :root {
+    --primary-color: #4a6cf7;
+    --secondary-color: #6b7280;
+    --background-color: #f0f2f5;
+    --card-background: #ffffff;
+    --text-color: #1f2937;
+    --text-muted: #6b7280;
+}
+
+/* ============================
+    Sección del Perfil del Cliente
+   ============================ */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* ============================
+    Contenedor del Perfil
+   ============================ */
+.profile-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+/* ============================
+    Tarjeta del Perfil
+   ============================ */
+.profile-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    background-color: var(--card-background);
+    max-width: 2000px;
+}
+
+/* ============================
+    Encabezado del Perfil
+   ============================ */
+.profile-header {
+    background: linear-gradient(135deg, var(--primary-color), #6a5af9);
+    color: white;
+    padding: 4rem 2rem;
+}
+
+/* ============================
+    Imagen del Perfil
+   ============================ */
+.profile-image-container {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    background-color: #6a5af9;
+}
+
+/* ============================
+    Nombre y Usuario del Perfil
+   ============================ */
+.profile-name {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.profile-username {
+    color: var(--text-muted);
+}
+
+/* ============================
+    Detalles del Perfil
+   ============================ */
+.profile-detail-item {
+    display: flex;
+    align-items: center;
+    background-color: #f9fafb;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    min-height: 120px;
+    transition: transform 0.3s;
+}
+
+.profile-detail-item:hover {
+    transform: translateY(-5px);
+}
+
+.detail-icon {
+    background-color: rgba(74, 108, 247, 0.1);
+    color: var(--primary-color);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-right: 1rem;
+}
+
+.detail-label {
+    font-size: 1rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.detail-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+/* ============================
+    Botones de Acción
+   ============================ */
+.profile-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-size: 1rem;
+}
+
+/* ============================
+    Responsive Design
+   ============================ */
+@media (max-width: 768px) {
+    .profile-header {
+        padding: 2rem;
+    }
+
+    .profile-detail-item {
+        flex-direction: column;
+        text-align: center;
+        min-height: auto;
+    }
+
+    .detail-icon {
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+    }
+
+    .profile-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}

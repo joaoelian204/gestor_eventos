@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración del Negocio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4">
+                <!-- Encabezado con ícono -->
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #6a11cb, #2575fc); border-radius: 0.5rem 0.5rem 0 0;">
+                    <h2 class="card-title fw-bold mb-0" style="font-size: 1.75rem;">
+                        <i class="fas fa-cog me-2"></i> Configuración del Negocio
+                    </h2>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Nombre y Teléfono -->
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="nombre" class="form-label fw-semibold text-primary">
+                                    <i class="fas fa-store me-2"></i> Nombre del Negocio
+                                </label>
+                                <input type="text" class="form-control rounded-pill px-4 py-3 shadow-sm" id="nombre" name="nombre" value="{{ negocio.nombre }}" placeholder="Ingresa el nombre del negocio" required>
+                                <div class="invalid-feedback">Por favor, ingresa el nombre del negocio.</div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="telefono" class="form-label fw-semibold text-primary">
+                                    <i class="fas fa-phone me-2"></i> Teléfono
+                                </label>
+                                <input type="text" class="form-control rounded-pill px-4 py-3 shadow-sm" id="telefono" name="telefono" value="{{ negocio.telefono }}" placeholder="Ingresa el número de teléfono" pattern="\d{10}" maxlength="10" required>
+                                <div class="invalid-feedback">Por favor, ingresa un número de teléfono válido de 10 dígitos.</div>
+                            </div>
+                        </div>
+
+                        <!-- Correo y Logo -->
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="correo" class="form-label fw-semibold text-primary">
+                                    <i class="fas fa-envelope me-2"></i> Correo Electrónico
+                                </label>
+                                <input type="email" class="form-control rounded-pill px-4 py-3 shadow-sm" id="correo" name="correo" value="{{ negocio.correo }}" placeholder="Ingresa el correo electrónico" required>
+                                <div class="invalid-feedback">Por favor, ingresa un correo electrónico válido.</div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="logo" class="form-label fw-semibold text-primary">
+                                    <i class="fas fa-image me-2"></i> Logo del Negocio
+                                </label>
+                                <input type="file" class="form-control rounded-4 px-3 py-2 shadow-sm" id="logo" name="logo" accept=".jpg, .jpeg, .png">
+                                <div class="invalid-feedback">Solo se permiten archivos en formato JPG, JPEG o PNG.</div>
+                            </div>
+                        </div>
+
+                        <!-- Direcciones -->
+                        <div class="mb-4">
+                            <label for="direccion_principal" class="form-label fw-semibold text-primary">
+                                <i class="fas fa-map-marker-alt me-2"></i> Dirección Principal
+                            </label>
+                            <textarea class="form-control rounded-4 px-3 py-3 shadow-sm" id="direccion_principal" name="direccion_principal" rows="2" placeholder="Ingresa la dirección principal" required>{{ negocio.direccion_principal }}</textarea>
+                            <div class="invalid-feedback">Por favor, ingresa la dirección principal.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="direccion_secundaria" class="form-label fw-semibold text-primary">
+                                <i class="fas fa-map-marker-alt me-2"></i> Dirección Secundaria
+                            </label>
+                            <textarea class="form-control rounded-4 px-3 py-3 shadow-sm" id="direccion_secundaria" name="direccion_secundaria" rows="2" placeholder="Ingresa la dirección secundaria">{{ negocio.direccion_secundaria }}</textarea>
+                        </div>
+
+                        <!-- Redes Sociales -->
+                        <h5 class="mt-4"><i class="fas fa-share-alt me-2"></i> Redes Sociales</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <label for="facebook" class="form-label fw-semibold text-primary">
+                                    <i class="fab fa-facebook me-2"></i> Facebook
+                                </label>
+                                <input type="url" class="form-control rounded-pill px-4 py-3 shadow-sm" id="facebook" name="redes_sociales[facebook]" value="{{ negocio.redes_sociales.facebook|default_if_none:'' }}" placeholder="Enlace de Facebook">
+                            </div>
+
+                            <div class="col-md-4 mb-4">
+                                <label for="instagram" class="form-label fw-semibold text-primary">
+                                    <i class="fab fa-instagram me-2"></i> Instagram
+                                </label>
+                                <input type="url" class="form-control rounded-pill px-4 py-3 shadow-sm" id="instagram" name="redes_sociales[instagram]" value="{{ negocio.redes_sociales.instagram|default_if_none:'' }}" placeholder="Enlace de Instagram">
+                            </div>
+
+                            <div class="col-md-4 mb-4">
+                                <label for="twitter" class="form-label fw-semibold text-primary">
+                                    <i class="fab fa-twitter me-2"></i> Twitter
+                                </label>
+                                <input type="url" class="form-control rounded-pill px-4 py-3 shadow-sm" id="twitter" name="redes_sociales[twitter]" value="{{ negocio.redes_sociales.twitter|default_if_none:'' }}" placeholder="Enlace de Twitter">
+                            </div>
+                        </div>
+
+                        <!-- Botón Guardar -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-gradient rounded-pill py-3 shadow-lg" style="background: linear-gradient(135deg, #2575fc, #6a11cb); color: #fff;">
+                                <i class="fas fa-save me-2"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Validación de formulario
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}
+
+
+
+
+
+

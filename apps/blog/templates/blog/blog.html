@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Blog de Eventos{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-center text-primary fw-bold">
+        <i class="fas fa-blog me-2"></i> Blog de Eventos
+    </h1>
+
+    <!-- Sección de Introducción -->
+    <div class="mb-5 p-4 bg-light rounded-4 shadow-sm text-center">
+        <h4 class="text-success fw-bold mb-3">
+            <i class="fas fa-bullhorn me-2"></i> ¡Descubre Nuestros Eventos!
+        </h4>
+        <p class="text-muted">
+            <i class="fas fa-calendar-check me-2"></i> Aquí encontrarás una selección de eventos organizados y realizados por nuestra empresa.
+            Desde celebraciones únicas hasta reuniones corporativas, exploramos cada experiencia y la compartimos contigo.
+        </p>
+        <p class="text-muted">
+            <i class="fas fa-camera-retro me-2"></i> ¡No te pierdas las imágenes, detalles y momentos destacados que hemos preparado para ti!
+        </p>
+    </div>
+
+    <div class="row">
+        {% if publicaciones %}
+            {% for publicacion in publicaciones %}
+            <div class="col-12 col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="position-relative">
+                        {% if publicacion.imagen_principal %}
+                        <img src="{{ publicacion.imagen_principal.url }}" class="card-img-top" style="height: 220px; object-fit: cover;" alt="Imagen Principal">
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x220?text=Sin+Imagen" class="card-img-top" style="height: 220px; object-fit: cover;" alt="Sin Imagen">
+                        {% endif %}
+                        
+                        <!-- Etiqueta de autor -->
+                        <div class="position-absolute top-0 start-0 bg-dark text-white px-3 py-1 rounded-bottom-end opacity-75">
+                            <small>
+                                <i class="fas fa-user me-1"></i> {{ publicacion.autor }}
+                            </small>
+                        </div>
+
+                        <!-- Fecha de creación -->
+                        <div class="position-absolute top-0 end-0 bg-dark text-white px-3 py-1 rounded-bottom-start opacity-75">
+                            <small>
+                                <i class="fas fa-calendar-alt me-1"></i> {{ publicacion.fecha_creacion|date:"d F Y" }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title mb-2 fw-bold text-dark">
+                            <i class="fas fa-heading me-2 text-primary"></i>{{ publicacion.titulo }}
+                        </h5>
+                        <p class="card-text text-muted flex-grow-1">
+                            <i class="fas fa-align-left me-1 text-secondary"></i>{{ publicacion.contenido|truncatewords:20 }}
+                        </p>
+
+                        <!-- Total de Me Gusta debajo de la tarjeta -->
+                        <div class="card-footer bg-white border-0 text-center">
+                            <i class="fas fa-heart text-danger me-2"></i>
+                            <span class="fw-bold">{{ publicacion.total_me_gustas }} Me Gusta</span>
+                        </div>
+
+                        <a href="{% url 'detalle_publicacion' publicacion.id %}" class="btn btn-primary btn-sm w-100 rounded-pill">
+                            <i class="fas fa-info-circle me-2"></i> Ver Detalle
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i> No hay publicaciones disponibles en este momento.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <!-- Controles de Paginación Mejorados -->
+    <nav aria-label="Paginación">
+        <div class="d-flex justify-content-center align-items-center mt-5">
+
+            <!-- Botón Anterior -->
+            {% if publicaciones.has_previous %}
+                <a class="btn btn-outline-primary rounded-circle shadow-sm me-2" href="?page={{ publicaciones.previous_page_number }}" style="width: 40px; height: 40px;">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            {% endif %}
+
+            <!-- Números de Página -->
+            <ul class="pagination mb-0">
+                {% for num in publicaciones.paginator.page_range %}
+                    {% if publicaciones.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link rounded-pill shadow-sm">{{ num }}</span>
+                        </li>
+                    {% elif num > publicaciones.number|add:'-3' and num < publicaciones.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link rounded-pill shadow-sm" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+            <!-- Botón Siguiente -->
+            {% if publicaciones.has_next %}
+                <a class="btn btn-outline-primary rounded-circle shadow-sm ms-2" href="?page={{ publicaciones.next_page_number }}" style="width: 40px; height: 40px;">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            {% endif %}
+
+        </div>
+    </nav>
+
+</div>
+{% endblock %}
+
+

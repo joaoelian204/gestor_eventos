@@ -1,0 +1,106 @@
+/* Variables de colores para consistencia */
+:root {
+    --color-cerulean: #257180;
+    --color-beige: #fffdf9;
+    --color-orange: #FD8B51;
+    --color-rust: #CB6040;
+}
+
+/* Configuración básica de cuerpo y texto */
+body {
+    background-color: var(--color-beige);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Estilo de la barra de navegación */
+.navbar {
+    background-color: var(--color-cerulean);
+    padding: 1rem;
+}
+
+.navbar-brand img {
+    max-height: 80px;
+    width: auto;
+}
+
+/* Tablas */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 15px;
+    background-color: var(--color-cerulean);
+    color: white;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa; /* Color suave al pasar el mouse */
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Botones */
+.btn-warning {
+    background-color: #ffcc00;
+    border: none;
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #ffb400;
+}
+
+.btn-danger {
+    background-color: #ff4d4d;
+    border: none;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #ff3333;
+}
+
+/* Footer */
+footer {
+    background-color: var(--color-cerulean);
+    color: var(--color-beige);
+    padding: 20px 0;
+    text-align: center;
+    font-size: 14px;
+}
+
+footer a {
+    color: var(--color-beige);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+.navbar-brand {
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto; /* Centra horizontalmente el contenedor */
+}
+
+.logo-img {
+    max-height: 100px; /* Altura máxima del logo */
+    max-width: 250px;  /* Ancho máximo del logo */
+    object-fit: contain;
+    display: block;    /* Evita que el logo tenga espacios adicionales */
+    margin: 0 auto;    /* Centra el logo horizontalmente */
+}

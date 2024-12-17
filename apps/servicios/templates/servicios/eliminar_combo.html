@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Eliminar Combo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-4 text-danger">Confirmar Eliminación</h2>
+    <p class="lead text-center">¿Estás seguro de que deseas eliminar el combo <strong>"{{ combo.nombre }}"</strong>?</p>
+    <div class="d-flex justify-content-center">
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger me-3">Eliminar Combo</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

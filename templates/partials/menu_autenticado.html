@@ -1,0 +1,140 @@
+{% if user.is_authenticated %}
+
+    <!-- ============================
+        Sección para Administradores
+        ============================ -->
+    {% if user.rol == 'administrador' %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'configuracion_negocio' %}active{% endif %}" href="{% url 'configuracion_negocio' %}">
+                <i class="fas fa-cogs me-1"></i> Configuración
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'crear_dueño' %}active{% endif %}" href="{% url 'crear_dueño' %}">
+                <i class="fas fa-user-plus me-1"></i> Crear Dueño
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'lista_duenos' %}active{% endif %}" href="{% url 'lista_duenos' %}">
+                <i class="fas fa-list me-1"></i> Lista Dueños
+            </a>
+        </li>
+
+    <!-- ============================
+        Sección para Dueños
+        ============================ -->
+    {% elif user.rol == 'dueño' %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+            </a>
+        </li>
+
+        <!-- Menú desplegable para Crear elementos (Combo y Servicio) -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'crear_combo crear_servicio' %}active{% endif %}" href="#" id="navbarCrearDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-plus-circle me-1"></i> Crear
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarCrearDropdown">
+                <li>
+                    <a class="dropdown-item {% if request.resolver_match.url_name == 'crear_combo' %}active{% endif %}" href="{% url 'crear_combo' %}">
+                        <i class="fas fa-gift me-1"></i> Crear Combo
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {% if request.resolver_match.url_name == 'crear_servicio' %}active{% endif %}" href="{% url 'crear_servicio' %}">
+                        <i class="fas fa-concierge-bell me-1"></i> Crear Servicio
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Menú desplegable para gestionar el Blog -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'crear_publicacion gestor_publicaciones blog' %}active{% endif %}" href="#" id="navbarBlogDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-blog me-2"></i> Blog
+            </a>
+            <ul class="dropdown-menu shadow-lg rounded-3 border-0" aria-labelledby="navbarBlogDropdown">
+                <li>
+                    <a class="dropdown-item py-2 {% if request.resolver_match.url_name == 'crear_publicacion' %}active{% endif %}" href="{% url 'crear_publicacion' %}">
+                        <i class="fas fa-plus-circle me-2 text-success"></i> Crear Publicación
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2 {% if request.resolver_match.url_name == 'gestor_publicaciones' %}active{% endif %}" href="{% url 'gestor_publicaciones' %}">
+                        <i class="fas fa-tasks me-2 text-primary"></i> Gestionar Publicaciones
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2 {% if request.resolver_match.url_name == 'blog' %}active{% endif %}" href="{% url 'blog' %}">
+                        <i class="fas fa-user-circle me-2 text-info"></i> Visualización Blog
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Menú desplegable para Gestión de Reservas, Eventos y Clientes -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'gestion_reservas gestion_eventos lista_servicios gestionar_clientes' %}active{% endif %}" href="#" id="navbarGestionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-tasks me-1"></i> Gestión
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarGestionDropdown">
+                <li>
+                    <a class="dropdown-item {% if request.resolver_match.url_name == 'gestion_reservas' %}active{% endif %}" href="{% url 'gestion_reservas' %}">
+                        <i class="fas fa-calendar-check me-1"></i> Gestionar Reservas
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {% if request.resolver_match.url_name == 'gestion_eventos' %}active{% endif %}" href="{% url 'gestion_eventos' %}">
+                        <i class="fas fa-calendar-alt me-1"></i> Gestionar Eventos
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {% if request.resolver_match.url_name == 'lista_servicios' %}active{% endif %}" href="{% url 'lista_servicios' %}">
+                        <i class="fas fa-list me-1"></i> Lista de Servicios
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {% if request.resolver_match.url_name == 'gestionar_clientes' %}active{% endif %}" href="{% url 'gestionar_clientes' %}">
+                        <i class="fas fa-users me-1"></i> Gestionar Clientes
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+    <!-- ============================
+        Sección para Clientes
+        ============================ -->
+    {% elif user.rol == 'cliente' %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'pagina_principal' %}active{% endif %}" href="{% url 'pagina_principal' %}">
+                <i class="fas fa-home me-1"></i> Inicio
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'catalogo_servicios' %}active{% endif %}" href="{% url 'catalogo_servicios' %}">
+                <i class="fas fa-book-open me-1"></i> Catálogo
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'reservas_activas' %}active{% endif %}" href="{% url 'reservas_activas' %}">
+                <i class="fas fa-clipboard-list me-1"></i> Reservas
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'historial_reservas' %}active{% endif %}" href="{% url 'historial_reservas' %}">
+                <i class="fas fa-history me-1"></i> Historial
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'perfil_cliente' %}active{% endif %}" href="{% url 'perfil_cliente' %}">
+                <i class="fas fa-user-circle me-1"></i> Perfil
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'blog' %}active{% endif %}" href="{% url 'blog' %}">
+                <i class="fas fa-user-circle me-1"></i> Blog
+            </a>
+        </li>
+    {% endif %}
+{% endif %}

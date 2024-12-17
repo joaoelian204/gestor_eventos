@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Crear Publicación{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Título Principal -->
+    <h2 class="mb-4 text-center text-success fw-bold">
+        <i class="fas fa-pen-nib me-2"></i>Crear Nueva Publicación
+    </h2>
+
+    <!-- Formulario de Creación -->
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body">
+            <form id="publicacionForm" method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <!-- Campo Título -->
+                <div class="mb-4">
+                    <label for="id_titulo" class="form-label fw-bold">
+                        <i class="fas fa-heading me-2 text-primary"></i>Título de la Publicación
+                    </label>
+                    <input type="text" id="id_titulo" name="titulo" class="form-control" required>
+                    <div class="invalid-feedback">El título es obligatorio y debe tener al menos 5 caracteres.</div>
+                </div>
+
+                <!-- Campo Contenido -->
+                <div class="mb-4">
+                    <label for="id_contenido" class="form-label fw-bold">
+                        <i class="fas fa-align-left me-2 text-primary"></i>Contenido de la Publicación
+                    </label>
+                    <textarea id="id_contenido" name="contenido" class="form-control" rows="5" required></textarea>
+                    <div class="invalid-feedback">El contenido es obligatorio y debe tener al menos 20 caracteres.</div>
+                </div>
+
+                <!-- Imagen Principal -->
+                <div class="mb-4">
+                    <label for="id_imagen_principal" class="form-label fw-bold">
+                        <i class="fas fa-image me-2 text-primary"></i>Imagen Principal
+                    </label>
+                    <input type="file" id="id_imagen_principal" name="imagen_principal" class="form-control" required>
+                    <div class="invalid-feedback">Por favor, sube una imagen en formato JPG o PNG.</div>
+                </div>
+
+                <!-- Galería de Imágenes -->
+                <div class="mb-4">
+                    <label for="imagenes" class="form-label fw-bold">
+                        <i class="fas fa-images me-2 text-primary"></i>Galería de Imágenes
+                    </label>
+                    <input type="file" id="imagenes" name="imagenes" class="form-control" multiple>
+                    <div class="form-text">
+                        <i class="fas fa-info-circle me-1"></i>Puedes seleccionar múltiples imágenes (JPG o PNG).
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-paper-plane me-2"></i>Crear Publicación
+                    </button>
+                    <a href="{% url 'gestor_publicaciones' %}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left me-2"></i>Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const imagenPrincipalInput = document.getElementById('id_imagen_principal');
+    
+        function validateImages(input) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            const file = input.files[0];
+    
+            if (file && !allowedTypes.includes(file.type)) {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+                alert(`El archivo ${file.name} no es válido y será convertido a formato PNG automáticamente.`);
+            } else {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            }
+        }
+    
+        imagenPrincipalInput.addEventListener('change', function () {
+            validateImages(this);
+        });
+    });
+    </script>
+    
+    
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard del Dueño{% endblock %}
+
+{% block extra_css %}
+<!-- ============================
+        Enlace al CSS del Dashboard del Dueño
+    ============================ -->
+{% endblock %}
+
+{% block content %}
+
+<!-- ============================
+        Contenedor Principal
+    ============================ -->
+<div class="container py-5">
+
+    <!-- ============================
+            Encabezado Principal
+        ============================ -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">
+            <i class="fas fa-tachometer-alt me-2"></i> Dashboard del Dueño
+        </h2>
+        <p class="text-muted fs-5">Resumen de tus estadísticas y reportes.</p>
+    </div>
+
+    <!-- ============================
+            Tarjetas de Estadísticas
+        ============================ -->
+    <div class="row g-4 mb-5">
+        <!-- Tarjeta de Eventos -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-calendar-day display-4 text-primary mb-3"></i>
+                    <h5 class="fw-bold">Eventos</h5>
+                    <p class="display-5 fw-bold">{{ total_eventos }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Reservas -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-calendar-check display-4 text-success mb-3"></i>
+                    <h5 class="fw-bold">Reservas</h5>
+                    <p class="display-5 fw-bold">{{ total_reservas }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Ganancias -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-hand-holding-usd display-4 text-danger mb-3"></i>
+                    <h5 class="fw-bold">Ganancias</h5>
+                    <p class="display-5 fw-bold">${{ ganancias }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Servicios -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-concierge-bell display-4 text-info mb-3"></i>
+                    <h5 class="fw-bold">Servicios</h5>
+                    <p class="display-5 fw-bold">{{ total_servicios }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Publicaciones -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-newspaper display-4 text-warning mb-3"></i>
+                    <h5 class="fw-bold">Publicaciones</h5>
+                    <p class="display-5 fw-bold">{{ total_publicaciones }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Combo -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-box display-4 text-secondary mb-3"></i>
+                    <h5 class="fw-bold">Combo</h5>
+                    <p class="display-5 fw-bold">{{ total_combos }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================
+            Sección de Reportes
+        ============================ -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="fw-bold mb-0"><i class="fas fa-chart-bar me-2"></i> Generar Reportes</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <!-- Selección del Tipo de Reporte -->
+                    <div class="col-md-4">
+                        <select id="reporteTipo" class="form-select">
+                            <option value="">-- Selecciona un tipo de reporte --</option>
+                            <option value="clientes">Cantidad de Clientes</option>
+                            <option value="dueños">Cantidad de Dueños</option>
+                            <option value="administradores">Cantidad de Administradores</option>
+                            <option value="ventas">Ventas por Fecha</option>
+                            <option value="nuevos_clientes">Nuevos Clientes por Fecha</option>
+                        </select>
+                    </div>
+    
+                    <!-- Fecha de Inicio del Reporte -->
+                    <div class="col-md-4">
+                        <input type="date" id="fechaInicio" class="form-control">
+                    </div>
+    
+                    <!-- Fecha de Fin del Reporte -->
+                    <div class="col-md-4">
+                        <input type="date" id="fechaFin" class="form-control">
+                    </div>
+                </div>
+    
+                <!-- Botones para Generar y Descargar Reportes -->
+                <button class="btn btn-primary mb-4" id="generarReporte">
+                    <i class="fas fa-chart-line me-2"></i> Generar Reporte
+                </button>
+                <button class="btn btn-success mb-4" id="descargarReporte">
+                    <i class="fas fa-download me-2"></i> Descargar Reporte
+                </button>
+    
+                <!-- Gráfico para Mostrar Reportes -->
+                <canvas id="reporteGrafico" height="100"></canvas>
+            </div>
+        </div>
+    
+    </div>
+    
+    {% endblock %}
+    
+    {% block extra_js %}
+    <!-- ============================
+            Enlace al JavaScript del Dashboard del Dueño
+        ============================ -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'js/dueño/dashboard_dueño.js' %}"></script>
+    {% endblock %}
+
+

@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}{{ publicacion.titulo }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Botón para Volver al Blog -->
+    <div class="mb-4">
+        <a href="{% url 'blog' %}" class="btn btn-outline-primary btn-lg d-inline-flex align-items-center shadow-sm rounded-pill">
+            <i class="fas fa-arrow-left me-2"></i> Volver al Blog
+        </a>
+    </div>
+
+    <!-- Título de la Publicación -->
+    <h1 class="mb-5 text-center text-primary fw-bold">
+        <i class="fas fa-newspaper me-2"></i>{{ publicacion.titulo }}
+    </h1>
+
+    <!-- Información del Autor y Fecha -->
+    <p class="text-center text-muted mb-5">
+        <i class="fas fa-user-edit me-1 text-secondary"></i> 
+        Publicado por <strong class="text-dark">{{ publicacion.autor }}</strong>
+        <span class="mx-3">
+            <i class="fas fa-calendar-alt me-1 text-secondary"></i>{{ publicacion.fecha_creacion|date:"d F Y" }}
+        </span>
+    </p>
+
+    <!-- Contenedor de la Publicación -->
+    <div class="card shadow-lg border-0 rounded-4 mb-5">
+        <div class="row g-0 align-items-center">
+
+            <!-- Imagen Principal -->
+            <div class="col-md-5 p-3">
+                {% if publicacion.imagen_principal %}
+                    <img src="{{ publicacion.imagen_principal.url }}" 
+                        class="img-fluid rounded w-100"
+                        style="height: 400px; object-fit: cover;"
+                        alt="Imagen Principal">
+                {% else %}
+                    <img src="https://via.placeholder.com/600x400?text=Sin+Imagen" 
+                        class="img-fluid rounded w-100" 
+                        style="height: 400px; object-fit: cover;" 
+                        alt="Sin Imagen">
+                {% endif %}
+
+                <!-- Botón de Me Gusta -->
+                <div class="d-flex align-items-center mt-4">
+                    <form action="{% url 'like_publicacion' publicacion.pk %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn like-button p-0 border-0 bg-transparent">
+                            {% if request.user in publicacion.me_gustas.all %}
+                                <i class="fas fa-heart heart-icon text-danger fa-2x"></i>
+                            {% else %}
+                                <i class="far fa-heart heart-icon fa-2x"></i>
+                            {% endif %}
+                        </button>
+                        <span class="ms-2 fs-5 fw-bold">{{ publicacion.total_me_gustas }}</span>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contenido de la Publicación -->
+            <div class="col-md-7 p-4">
+                <h3 class="card-title text-primary fw-bold mb-3">
+                    <i class="fas fa-align-left me-2"></i>Descripción
+                </h3>
+                <p class="card-text text-dark fs-6" style="line-height: 1.6; text-align: justify;">
+                    {{ publicacion.contenido }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Galería de Imágenes -->
+    <h3 class="mb-5 text-center text-success fw-bold">
+        <i class="fas fa-images me-2"></i> Galería de Imágenes
+    </h3>
+
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+
+        <!-- Indicadores del Carrusel -->
+        <div class="carousel-indicators">
+            {% for imagen in publicacion.galeria.all %}
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ forloop.counter }}"></button>
+            {% endfor %}
+        </div>
+
+        <!-- Contenido del Carrusel -->
+        <div class="carousel-inner">
+            {% for imagen in publicacion.galeria.all %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ imagen.imagen.url }}" class="d-block w-100" style="height: 500px; object-fit: cover;" alt="{{ imagen.descripcion }}">
+                    {% if imagen.descripcion %}
+                        <div class="carousel-caption d-none d-md-block">
+                            <p class="bg-dark text-white p-2 rounded">{{ imagen.descripcion }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="carousel-item active">
+                    <div class="alert alert-warning text-center" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i> No hay imágenes en la galería.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Controles del Carrusel -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
+
+    <!-- Sección de Comentarios -->
+    <h3 class="mt-5 text-center text-info fw-bold">
+        <i class="fas fa-comments me-2"></i> Comentarios
+    </h3>
+
+    <div class="mb-5">
+        {% for comentario in comentarios %}
+            <div class="card mb-4 shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-user-circle fa-3x me-3 text-primary"></i>
+                        <div>
+                            <h5 class="card-title mb-1 fw-bold text-dark">{{ comentario.autor }}</h5>
+                            <p class="card-subtitle text-muted">
+                                <i class="fas fa-clock me-1"></i>{{ comentario.fecha_creacion|date:"d F Y H:i" }}
+                            </p>
+                        </div>
+                    </div>
+                    <p class="card-text text-secondary fs-6" style="line-height: 1.6;">
+                        <i class="fas fa-comment-alt me-2 text-success"></i>{{ comentario.contenido }}
+                    </p>
+                </div>
+            </div>
+        {% empty %}
+            <div class="alert alert-info text-center py-4 rounded-4 shadow-sm">
+                <i class="fas fa-info-circle me-2 fa-2x text-info"></i>
+                <p class="mb-0 fs-5">No hay comentarios aún. ¡Sé el primero en comentar!</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Formulario para Agregar Comentarios -->
+    {% if user.is_authenticated %}
+        <div class="card shadow-lg border-0 rounded-4 mb-5">
+            <div class="card-body p-4">
+                <h4 class="mb-4 text-primary fw-bold">
+                    <i class="fas fa-pencil-alt me-2"></i> Deja tu comentario
+                </h4>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.contenido }}
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg d-inline-flex align-items-center">
+                        <i class="fas fa-paper-plane me-2"></i> Enviar Comentario
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center py-4 rounded-4 shadow-sm">
+            <i class="fas fa-info-circle me-2 fa-2x text-warning"></i>
+            <p class="mb-0 fs-5">
+                Debes <a href="{% url 'login_usuario' %}" class="text-decoration-none fw-bold">iniciar sesión</a> para dejar un comentario.
+            </p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+

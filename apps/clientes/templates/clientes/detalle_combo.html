@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Detalle del Combo: {{ combo.nombre }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Recuadro flotante */
+    .floating-box {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+        width: 100%;
+        max-width: 500px;
+        display: none; /* Oculto por defecto */
+    }
+
+    /* Overlay para oscurecer el fondo */
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        display: none; /* Oculto por defecto */
+    }
+
+    /* Botón para cerrar el recuadro flotante */
+    .floating-box .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* Mensaje de éxito */
+    .success-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: #fff;
+        padding: 1rem;
+        border-radius: 5px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: none; /* Oculto por defecto */
+        z-index: 1002;
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- Título Principal -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">
+            <i class="fas fa-gift me-2"></i> Detalle del Combo: <span class="text-secondary">{{ combo.nombre }}</span>
+        </h2>
+    </div>
+    
+    <!-- Sección de Imágenes del Combo con Carrusel -->
+    <div class="mb-5">
+        <h4 class="fw-bold text-secondary mb-4">
+            <i class="fas fa-images me-2 text-danger"></i> Imágenes del Combo
+        </h4>
+
+        {% if imagenes %}
+        <div id="carouselCombo" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                {% for imagen in imagenes %}
+                    <button type="button" data-bs-target="#carouselCombo" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ forloop.counter }}"></button>
+                {% endfor %}
+            </div>
+
+            <div class="carousel-inner">
+                {% for imagen in imagenes %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ imagen.imagen.url }}" class="d-block w-100" style="height: 500px; object-fit: cover;" alt="Imagen del Combo">
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselCombo" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselCombo" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+        {% else %}
+            <p class="text-muted text-center">
+                <i class="fas fa-exclamation-circle me-2"></i>No hay imágenes disponibles para este combo.
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- Tarjeta de Detalle del Combo -->
+    <div class="card mb-5 shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+            <h3 class="card-title text-center fw-bold mb-3">
+                <i class="fas fa-box text-info me-2"></i>{{ combo.nombre }}
+            </h3>
+            <p class="card-text text-muted">
+                <i class="fas fa-info-circle me-2 text-secondary"></i>
+                <strong>Descripción:</strong> {{ combo.descripcion }}
+            </p>
+            <p class="d-none" id="combo-precio">{{ combo.precio }}</p>
+            <div class="d-flex justify-content-center mt-4">
+                <p class="card-text fs-5 mb-0">
+                    <i class="fas fa-dollar-sign me-2 text-success"></i>
+                    <strong>Precio:</strong> ${{ combo.precio }}
+                </p>
+            </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-cerulean btn-lg rounded-pill px-4 shadow-sm btn-reservar">
+                    <i class="fas fa-calendar-check me-2"></i> Reservar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Servicios Incluidos -->
+    <div class="mb-5">
+        <h4 class="fw-bold text-secondary mb-4">
+            <i class="fas fa-concierge-bell me-2 text-warning"></i> Servicios Incluidos
+        </h4>
+        {% if servicios_incluidos %}
+            <div class="row g-4">
+                {% for servicio in servicios_incluidos %}
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm rounded-3">
+                            <div class="card-body d-flex align-items-start">
+                                <i class="fas fa-cogs fa-2x text-primary me-3"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-2">
+                                        <i class="fas fa-tag me-2 text-success"></i>{{ servicio.titulo }}
+                                    </h5>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-info-circle me-1"></i>{{ servicio.descripcion }}
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-dollar-sign me-2 text-primary"></i><strong>Precio:</strong> ${{ servicio.valor_por_unidad }}
+                                    </p>
+                                    <span class="badge bg-info mt-2">
+                                        <i class="fas fa-wrench me-1"></i>{{ servicio.get_tipo_servicio_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted text-center">
+                <i class="fas fa-exclamation-circle me-2"></i>No hay servicios incluidos en este combo.
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- Botón de Volver -->
+    <div class="text-center mt-4">
+        <a href="{% url 'catalogo_servicios' %}" class="btn btn-outline-primary rounded-pill py-3 shadow-sm">
+            <i class="fas fa-arrow-left me-2"></i> Volver a Catálogo
+        </a>
+    </div>
+
+</div>
+
+<!-- Overlay y Recuadro Flotante de Confirmación -->
+<div id="overlay" onclick="cerrarFloatingBox()"></div>
+<div id="confirmacion-box" class="floating-box">
+    <button class="close-btn" onclick="cerrarFloatingBox()">&times;</button>
+    <h4 class="fw-bold text-center mb-4"><i class="fas fa-check-circle me-2"></i> Confirmar Reserva</h4>
+    <form id="reserva-form">
+        <div class="mb-3">
+            <label for="fecha-inicio" class="form-label">Fecha y Hora de Inicio</label>
+            <input type="datetime-local" id="fecha-inicio" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="fecha-fin" class="form-label">Fecha y Hora de Fin</label>
+            <input type="datetime-local" id="fecha-fin" class="form-control">
+        </div>
+        <div class="mb-3">
+            <strong>Total: $<span id="total-precio">{{ combo.precio }}</span></strong>
+        </div>
+        <div class="text-center">
+            <button type="button" class="btn btn-success rounded-pill px-4 shadow-sm" id="btn-confirmar">Confirmar</button>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript para Controlar el Recuadro Flotante -->
+<script>
+    function cerrarFloatingBox() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('confirmacion-box').style.display = 'none';
+    }
+
+    document.querySelector('.btn-reservar').addEventListener('click', () => {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('confirmacion-box').style.display = 'block';
+    });
+
+    document.getElementById('btn-confirmar').addEventListener('click', () => {
+        alert('¡Combo reservado y correo enviado con éxito!');
+        cerrarFloatingBox();
+    });
+</script>
+
+<!-- Iconos de FontAwesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}
+
+
+
+

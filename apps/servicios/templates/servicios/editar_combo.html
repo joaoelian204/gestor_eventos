@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Combo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Encabezado Principal con Ícono -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">
+            <i class="fas fa-edit me-2"></i> Editar Combo
+        </h2>
+        <p class="text-muted">Modifica los detalles del combo y actualiza los servicios o imágenes.</p>
+    </div>
+
+    <!-- Tarjeta del Formulario -->
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4); border-radius: 0.5rem 0.5rem 0 0;">
+                    <h3 class="card-title fw-bold mb-0">
+                        <i class="fas fa-pencil-alt me-2"></i> Detalles del Combo
+                    </h3>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Nombre y Precio -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="id_nombre" class="form-label fw-semibold">
+                                    <i class="fas fa-tag me-2 text-primary"></i> Nombre del Combo
+                                </label>
+                                <input type="text" class="form-control rounded-pill shadow-sm" id="id_nombre" name="nombre" value="{{ form.nombre.value }}" required>
+                                <div class="invalid-feedback">Por favor, ingresa el nombre del combo.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_precio" class="form-label fw-semibold">
+                                    <i class="fas fa-dollar-sign me-2 text-success"></i> Precio del Combo ($)
+                                </label>
+                                <input type="number" step="0.01" class="form-control rounded-pill shadow-sm" id="id_precio" name="precio" value="{{ form.precio.value }}" required>
+                                <div class="invalid-feedback">Por favor, ingresa un precio válido.</div>
+                            </div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="mb-4">
+                            <label for="id_descripcion" class="form-label fw-semibold">
+                                <i class="fas fa-info-circle me-2 text-info"></i> Descripción del Combo
+                            </label>
+                            <textarea class="form-control rounded-3 shadow-sm" id="id_descripcion" name="descripcion" rows="3" required>{{ form.descripcion.value }}</textarea>
+                            <div class="invalid-feedback">Por favor, ingresa una descripción del combo.</div>
+                        </div>
+
+                        <!-- Servicios Incluidos y Imágenes -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="id_servicios_incluidos" class="form-label fw-semibold">
+                                    <i class="fas fa-concierge-bell me-2 text-warning"></i> Servicios Incluidos
+                                </label>
+                                <select id="id_servicios_incluidos" name="servicios_incluidos" class="form-select rounded-3 shadow-sm" multiple required>
+                                    {% for servicio in form.servicios_incluidos.field.queryset %}
+                                        <option value="{{ servicio.id }}" {% if servicio in form.servicios_incluidos.value %}selected{% endif %}>
+                                            {{ servicio.titulo }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">
+                                    <i class="fas fa-hand-pointer me-2"></i>Mantén presionada la tecla <strong>Ctrl</strong> (Windows) o <strong>Cmd</strong> (Mac) para seleccionar múltiples servicios.
+                                </div>
+                                <div class="invalid-feedback">Por favor, selecciona al menos un servicio.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_imagenes" class="form-label fw-semibold">
+                                    <i class="fas fa-images me-2 text-danger"></i> Imágenes del Combo
+                                </label>
+                                <input type="file" class="form-control rounded-3 shadow-sm" id="id_imagenes" name="imagenes" accept="image/*" multiple>
+                                <div class="form-text">
+                                    <i class="fas fa-upload me-2"></i>Puedes subir varias imágenes a la vez.
+                                </div>
+                                <div class="invalid-feedback">Por favor, sube al menos una imagen.</div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-success rounded-pill py-3 shadow-lg">
+                                <i class="fas fa-save me-2"></i> Guardar Cambios
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-danger rounded-pill py-3 shadow-sm">
+                                <i class="fas fa-times me-2"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para Validación del Formulario -->
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}

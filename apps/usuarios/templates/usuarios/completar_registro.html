@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Completar Registro{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden animate__animated animate__fadeIn">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <h3 class="fw-bold mb-0"><i class="fas fa-user-plus me-2"></i> Completa tu Registro</h3>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <div class="row g-4">
+                            <!-- Identificación -->
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" id="identificacion" name="identificacion" class="form-control" placeholder="1234567890" required>
+                                    <label for="identificacion"><i class="fas fa-id-card me-2 text-primary"></i> Identificación</label>
+                                    <div class="invalid-feedback">Por favor ingresa una identificación válida.</div>
+                                </div>
+                            </div>
+
+                            <!-- Nombres -->
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" id="nombres" name="nombres" class="form-control" placeholder="Juan Carlos" required>
+                                    <label for="nombres"><i class="fas fa-user me-2 text-primary"></i> Nombres</label>
+                                    <div class="invalid-feedback">Por favor ingresa tus nombres.</div>
+                                </div>
+                            </div>
+
+                            <!-- Apellidos -->
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" id="apellidos" name="apellidos" class="form-control" placeholder="Pérez García" required>
+                                    <label for="apellidos"><i class="fas fa-user-tag me-2 text-primary"></i> Apellidos</label>
+                                    <div class="invalid-feedback">Por favor ingresa tus apellidos.</div>
+                                </div>
+                            </div>
+
+                            <!-- Correo -->
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="email" id="correo" name="correo" class="form-control" placeholder="ejemplo@correo.com">
+                                    <label for="correo"><i class="fas fa-envelope me-2 text-primary"></i> Correo Electrónico</label>
+                                    <div class="invalid-feedback">Por favor ingresa un correo válido.</div>
+                                </div>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" id="telefono" name="telefono" class="form-control" placeholder="+1234567890">
+                                    <label for="telefono"><i class="fas fa-phone me-2 text-primary"></i> Teléfono</label>
+                                    <div class="invalid-feedback">Por favor ingresa un número de teléfono válido.</div>
+                                </div>
+                            </div>
+
+                            <!-- Nacionalidad -->
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" id="nacionalidad" name="nacionalidad" class="form-control" placeholder="Mexicana">
+                                    <label for="nacionalidad"><i class="fas fa-flag me-2 text-primary"></i> Nacionalidad</label>
+                                    <div class="invalid-feedback">Por favor ingresa tu nacionalidad.</div>
+                                </div>
+                            </div>
+
+                            <!-- Género -->
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <select id="genero" name="genero" class="form-select" required>
+                                        <option value="" selected disabled>Selecciona tu género</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="F">Femenino</option>
+                                        <option value="O">Otro</option>
+                                    </select>
+                                    <label for="genero"><i class="fas fa-venus-mars me-2 text-primary"></i> Género</label>
+                                    <div class="invalid-feedback">Por favor selecciona tu género.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-center gap-3 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-lg px-5">
+                                <i class="fas fa-save me-2"></i> Guardar
+                            </button>
+                            <button type="reset" class="btn btn-danger btn-lg rounded-pill shadow-lg px-5">
+                                <i class="fas fa-times me-2"></i> Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Iconos FontAwesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<!-- Validación JavaScript -->
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+
+<!-- Estilos CSS Personalizados -->
+<style>
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border-radius: 1rem;
+    }
+
+    .form-floating label {
+        color: #666;
+    }
+
+    .form-control, .form-select {
+        border-radius: 0.5rem;
+    }
+
+    .btn-primary, .btn-danger {
+        font-weight: bold;
+        transition: transform 0.2s ease;
+    }
+
+    .btn-primary:hover, .btn-danger:hover {
+        transform: translateY(-3px);
+    }
+</style>
+{% endblock %}

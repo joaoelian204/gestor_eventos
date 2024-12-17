@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Dueño{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Encabezado con ícono y estilo mejorado -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">
+            <i class="fas fa-user-edit me-2"></i> Editar Dueño
+        </h2>
+        <p class="text-muted">Actualiza la información del dueño registrado.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Campo de Nombre de Usuario con ícono -->
+                        <div class="mb-4">
+                            <label for="username" class="form-label fw-semibold text-primary">
+                                <i class="fas fa-user me-2"></i> Nombre de Usuario
+                            </label>
+                            <input type="text" class="form-control rounded-pill px-4 py-3 shadow-sm" id="username" name="username" value="{{ dueno.username }}" placeholder="Ingresa el nombre de usuario" required>
+                            <div class="invalid-feedback">Por favor, ingresa un nombre de usuario válido.</div>
+                        </div>
+
+                        <!-- Campo de Correo Electrónico con ícono -->
+                        <div class="mb-4">
+                            <label for="email" class="form-label fw-semibold text-primary">
+                                <i class="fas fa-envelope me-2"></i> Correo Electrónico
+                            </label>
+                            <input type="email" class="form-control rounded-pill px-4 py-3 shadow-sm" id="email" name="email" value="{{ dueno.email }}" placeholder="Ingresa el correo electrónico" required>
+                            <div class="invalid-feedback">Por favor, ingresa un correo electrónico válido.</div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-gradient rounded-pill py-3 shadow-lg" style="background: linear-gradient(135deg, #2575fc, #6a11cb); color: #fff;">
+                                <i class="fas fa-save me-2"></i> Actualizar Dueño
+                            </button>
+                            <a href="{% url 'lista_duenos' %}" class="btn btn-outline-secondary rounded-pill py-3 shadow-sm">
+                                <i class="fas fa-times me-2"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Validación del formulario
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}
+
+

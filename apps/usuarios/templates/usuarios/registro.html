@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load custom_tags %}
+
+{% block title %}Registro de Usuario{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <!-- Encabezado atractivo -->
+                <div class="card-header text-white text-center py-4" 
+                        style="background: linear-gradient(135deg, #6a11cb, #2575fc); border-radius: 0.5rem 0.5rem 0 0;">
+                    <h3 class="card-title mb-0 fw-bold">
+                        <i class="fas fa-user-plus me-2"></i> Crea tu Cuenta
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Bloque para mostrar mensajes de Django -->
+                    {% if messages %}
+                        <div class="mb-4">
+                            {% for message in messages %}
+                                <div class="alert alert-custom rounded-pill p-4 shadow-lg d-flex align-items-center" role="alert" style="background: {{ message.tags|alert_color }}; color: #fff;">
+                                    <!-- Icono según el tipo de mensaje -->
+                                    <div class="me-3">
+                                        {% if message.tags == "success" %}
+                                            <i class="fas fa-check-circle" style="font-size: 1.5rem;"></i>
+                                        {% elif message.tags == "error" %}
+                                            <i class="fas fa-times-circle" style="font-size: 1.5rem;"></i>
+                                        {% elif message.tags == "warning" %}
+                                            <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i>
+                                        {% else %}
+                                            <i class="fas fa-info-circle" style="font-size: 1.5rem;"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>{{ message }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="POST" id="registroForm" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Campo de correo -->
+                        <div class="mb-4">
+                            <label for="email" class="form-label fw-semibold text-primary">
+                                <i class="fas fa-envelope me-2"></i> Correo Electrónico
+                            </label>
+                            <input type="email" class="form-control rounded-pill px-4 py-3 shadow-sm" id="email" name="email" placeholder="Ingresa tu correo electrónico" required>
+                            <div class="invalid-feedback">Por favor, ingresa un correo válido.</div>
+                        </div>
+                        
+                        <!-- Campo de usuario -->
+                        <div class="mb-4">
+                            <label for="username" class="form-label fw-semibold text-primary">
+                                <i class="fas fa-user me-2"></i> Nombre de Usuario
+                            </label>
+                            <input type="text" class="form-control rounded-pill px-4 py-3 shadow-sm" id="username" name="username" placeholder="Crea un nombre de usuario" required>
+                            <div class="invalid-feedback">Por favor, ingresa un nombre de usuario.</div>
+                        </div>
+                        
+                        <!-- Campo de contraseña -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-semibold text-primary">
+                                <i class="fas fa-lock me-2"></i> Contraseña
+                            </label>
+                            <input type="password" class="form-control rounded-pill px-4 py-3 shadow-sm" id="password" name="password" placeholder="Crea una contraseña segura" minlength="8" required>
+                            <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres.</div>
+                        </div>
+
+                        <!-- Campo de confirmación de contraseña -->
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label fw-semibold text-primary">
+                                <i class="fas fa-lock me-2"></i> Confirma tu Contraseña
+                            </label>
+                            <input type="password" class="form-control rounded-pill px-4 py-3 shadow-sm" id="confirm_password" name="confirm_password" placeholder="Repite tu contraseña" required>
+                            <div class="invalid-feedback" id="passwordMismatchError">Las contraseñas no coinciden.</div>
+                        </div>
+                        
+                        <!-- Botón de registro -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-gradient rounded-pill py-3 shadow-lg" 
+                                    style="background: linear-gradient(135deg, #2575fc, #6a11cb); color: #fff;">
+                                <i class="fas fa-user-check me-2"></i> Registrarse
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Mensajes adicionales -->
+                    <div class="text-center mt-4">
+                        <p>
+                            ¿Ya tienes cuenta? 
+                            <a href="{% url 'login_usuario' %}" class="text-primary fw-bold">
+                                <i class="fas fa-sign-in-alt me-1"></i> Inicia Sesión
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Validación del formulario y confirmación de contraseña
+    (function () {
+        'use strict';
+        const form = document.getElementById('registroForm');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm_password');
+        const passwordMismatchError = document.getElementById('passwordMismatchError');
+
+        form.addEventListener('submit', function (event) {
+            let isValid = true;
+
+            // Validar si las contraseñas coinciden
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity('Las contraseñas no coinciden.');
+                passwordMismatchError.style.display = 'block';
+                isValid = false;
+            } else {
+                confirmPassword.setCustomValidity('');
+                passwordMismatchError.style.display = 'none';
+            }
+
+            // Evitar envío si el formulario no es válido
+            if (form.checkValidity() === false || !isValid) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        }, false);
+
+        confirmPassword.addEventListener('input', function () {
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity('Las contraseñas no coinciden.');
+                passwordMismatchError.style.display = 'block';
+            } else {
+                confirmPassword.setCustomValidity('');
+                passwordMismatchError.style.display = 'none';
+            }
+        });
+    })();
+</script>
+{% endblock %}
+
+
+
+

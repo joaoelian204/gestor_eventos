@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Servicio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Encabezado Principal con Ícono -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">
+            <i class="fas fa-concierge-bell me-2"></i> Crear Nuevo Servicio
+        </h2>
+        <p class="text-muted">Completa el formulario para añadir un nuevo servicio a tu catálogo.</p>
+    </div>
+
+    <!-- Tarjeta del Formulario -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #2575fc, #6a11cb); border-radius: 0.5rem 0.5rem 0 0;">
+                    <h3 class="card-title fw-bold mb-0">
+                        <i class="fas fa-plus-circle me-2"></i> Nuevo Servicio
+                    </h3>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Campos en dos columnas -->
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="titulo" class="form-label fw-semibold">
+                                    <i class="fas fa-tag me-2 text-primary"></i> Título del Servicio
+                                </label>
+                                <input type="text" class="form-control rounded-pill shadow-sm" id="titulo" name="titulo" placeholder="Ej. Alquiler de sillas" required>
+                                <div class="invalid-feedback">Por favor, ingresa el título del servicio.</div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="valor_por_unidad" class="form-label fw-semibold">
+                                    <i class="fas fa-dollar-sign me-2 text-primary"></i> Valor por Unidad ($)
+                                </label>
+                                <input type="number" step="0.01" class="form-control rounded-pill shadow-sm" id="valor_por_unidad" name="valor_por_unidad" placeholder="Ej. 50.00" required>
+                                <div class="invalid-feedback">Por favor, ingresa un valor válido.</div>
+                            </div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="mb-4">
+                            <label for="descripcion" class="form-label fw-semibold">
+                                <i class="fas fa-file-alt me-2 text-primary"></i> Descripción del Servicio
+                            </label>
+                            <textarea class="form-control rounded-3 shadow-sm" id="descripcion" name="descripcion" rows="3" placeholder="Describe brevemente el servicio ofrecido" required></textarea>
+                            <div class="invalid-feedback">Por favor, ingresa una descripción del servicio.</div>
+                        </div>
+
+                        <!-- Tipo de Servicio e Imagen -->
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="tipo_servicio" class="form-label fw-semibold">
+                                    <i class="fas fa-cogs me-2 text-primary"></i> Tipo de Servicio
+                                </label>
+                                <select class="form-select rounded-pill shadow-sm" id="tipo_servicio" name="tipo_servicio" required>
+                                    <option value="" selected disabled>Selecciona el tipo de servicio</option>
+                                    <option value="individual">Individual</option>
+                                    <option value="combo">Combo</option>
+                                </select>
+                                <div class="invalid-feedback">Por favor, selecciona el tipo de servicio.</div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="imagen_referencial" class="form-label fw-semibold">
+                                    <i class="fas fa-image me-2 text-primary"></i> Imagen Referencial
+                                </label>
+                                <input type="file" class="form-control rounded-pill shadow-sm" id="imagen_referencial" name="imagen_referencial" accept="image/*">
+                                <div class="invalid-feedback">Por favor, selecciona una imagen válida.</div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-gradient rounded-pill py-3 shadow-lg" style="background: linear-gradient(135deg, #2575fc, #6a11cb); color: #fff;">
+                                <i class="fas fa-save me-2"></i> Guardar Servicio
+                            </button>
+                            <a href="{% url 'lista_servicios' %}" class="btn btn-outline-secondary rounded-pill py-3 shadow-sm">
+                                <i class="fas fa-times me-2"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para Validación del Formulario -->
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}
+
+
+
+
+

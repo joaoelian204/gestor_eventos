@@ -1,0 +1,162 @@
+/* ============================
+    Variables Globales
+   ============================ */
+
+/* Paleta de colores personalizada */
+:root {
+    --color-cerulean: #257180;
+    --color-beige: #fffdf9;
+    --color-orange: #FD8B51;
+    --color-rust: #CB6040;
+}
+
+/* ============================
+    Estilos de Texto
+   ============================ */
+
+/* Colores y tamaños para texto */
+.text-cerulean {
+    color: var(--color-cerulean);
+}
+
+/* ============================
+    Estilos para Formularios
+   ============================ */
+
+.form-control, .form-select {
+    height: 45px;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+/* ============================
+    Botones
+   ============================ */
+
+.btn-cerulean {
+    background-color: var(--color-cerulean);
+    color: white;
+    border: none;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-cerulean:hover {
+    background-color: #1e5a68;
+    transform: translateY(-3px);
+}
+
+.btn-rust {
+    background-color: var(--color-rust);
+    color: white;
+    border: none;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-rust:hover {
+    background-color: #a14e32;
+    transform: translateY(-3px);
+}
+
+.btn-outline-rust {
+    border-color: var(--color-rust);
+    color: var(--color-rust);
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+}
+
+.btn-outline-rust:hover {
+    background-color: var(--color-rust);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* ============================
+    Tarjetas
+   ============================ */
+
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: var(--color-beige);
+    border-radius: 20px;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.image-container {
+    height: 200px;
+    background-color: var(--color-beige);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-img-top {
+    max-height: 100%;
+    width: auto;
+    object-fit: contain;
+    padding: 10px;
+}
+
+/* ============================
+    Etiquetas y Botones de Tamaño
+   ============================ */
+
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+}
+
+.bg-orange {
+    background-color: var(--color-orange);
+}
+
+.btn-lg {
+    font-size: 1rem;
+    padding: 10px 20px;
+}
+
+.text-muted {
+    font-size: 1rem;
+}
+
+.fs-4 {
+    font-size: 1.5rem;
+}
+
+/* ============================
+    Recuadro Flotante y Overlay
+   ============================ */
+
+.floating-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-width: 90%;
+    width: 400px;
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+
+/* Mostrar overlay cuando el recuadro flotante esté visible */
+#cliente-box:not(.d-none) ~ #overlay,
+#confirmacion-box:not(.d-none) ~ #overlay {
+    display: block;
+}

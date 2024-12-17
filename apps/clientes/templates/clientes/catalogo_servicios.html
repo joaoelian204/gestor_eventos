@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Catálogo de Servicios y Combos{% endblock %}
+
+<!-- Estilos adicionales específicos -->
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cliente/catalogo_servicios.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-5 text-cerulean fw-bold">
+        <i class="fas fa-clipboard-list me-2"></i> Catálogo de Servicios y Combos
+    </h1>
+
+    <!-- Formulario de Filtrado -->
+    <form method="GET" class="mb-5">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-5">
+                <input type="text" name="q" class="form-control shadow-sm rounded-pill" placeholder="🔍 Buscar por título o descripción" value="{{ request.GET.q }}">
+            </div>
+            <div class="col-md-3">
+                <select name="tipo" class="form-select shadow-sm rounded-pill">
+                    <option value="">Todos</option>
+                    <option value="servicio" {% if request.GET.tipo == 'servicio' %}selected{% endif %}>Servicios</option>
+                    <option value="combo" {% if request.GET.tipo == 'combo' %}selected{% endif %}>Combos</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-cerulean rounded-pill shadow">
+                    <i class="fas fa-filter me-1"></i> Filtrar
+                </button>
+            </div>
+            <div class="col-md-2 d-grid">
+                <a href="{% url 'catalogo_servicios' %}" class="btn btn-danger rounded-pill shadow">
+                    <i class="fas fa-times-circle me-1"></i> Borrar Filtros
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Resultados -->
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for item in items %}
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="image-container position-relative">
+                {% if item.imagen_referencial %}
+                    <img src="{{ item.imagen_referencial.url }}" class="card-img-top img-fluid" alt="{{ item.titulo }}">
+                {% elif item.imagenes.all %}
+                    <img src="{{ item.imagenes.first.imagen.url }}" class="card-img-top img-fluid" alt="{{ item.nombre }}">
+                {% endif %}
+                <div class="position-absolute top-0 end-0 m-2">
+                    <span class="badge bg-success p-2">
+                        <i class="fas fa-tag me-1"></i>
+                        {% if item.tipo_servicio %}
+                            ${{ item.valor_por_unidad }}
+                        {% else %}
+                            ${{ item.precio }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="card-body d-flex flex-column p-4">
+                <h5 class="card-title text-cerulean fw-bold mb-3">
+                    <i class="fas fa-concierge-bell me-2"></i>
+                    {% if item.tipo_servicio %}
+                        {{ item.titulo }}
+                    {% else %}
+                        {{ item.nombre }}
+                    {% endif %}
+                </h5>
+
+                <div class="card-text text-muted flex-grow-1" style="line-height: 1.6; font-size: 1rem; text-align: justify;">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% if item.tipo_servicio %}
+                        {{ item.descripcion|linebreaks }}
+                    {% else %}
+                        {{ item.descripcion|truncatechars:100  }}
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-center mt-4">
+                    {% if item.tipo_servicio %}
+                    <button class="btn btn-cerulean btn-lg rounded-pill px-5 shadow-sm btn-reservar" 
+                            data-titulo="{{ item.titulo }}" 
+                            data-precio="{{ item.valor_por_unidad }}"
+                            data-cliente-id="{{ cliente.id }}"
+                            data-evento-id="{{ item.id }}"
+                            data-cliente-correo="{{ cliente.correo }}"
+                            data-cliente-nombres="{{ cliente.nombres }}"
+                            data-cliente-apellidos="{{ cliente.apellidos }}"
+                            data-cliente-identificacion="{{ cliente.identificacion }}"
+                            data-cliente-telefono="{{ cliente.telefono }}">
+                        <i class="fas fa-calendar-check me-2"></i> Reservar
+                    </button>
+                    {% else %}
+                        <a href="{% url 'detalle_combo' item.id %}" class="btn btn-info btn-lg rounded-pill px-5 shadow-sm">
+                            <i class="fas fa-info-circle me-2"></i> Ver Detalles
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-danger fs-4">
+        <i class="fas fa-exclamation-circle me-2"></i> No se encontraron resultados.
+    </p>
+    {% endfor %}
+</div>
+</div>
+
+<!-- Recuadro Flotante: Información del Cliente -->
+<div id="cliente-box" class="floating-box d-none">
+    <h4 class="text-cerulean fw-bold mb-3">
+        <i class="fas fa-user me-2"></i> Información del Cliente
+    </h4>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-2">
+            <strong>Nombres:</strong> <span id="cliente-nombres"></span>
+        </div>
+        <div class="mb-2">
+            <strong>Apellidos:</strong> <span id="cliente-apellidos"></span>
+        </div>
+        <div class="mb-2">
+            <strong>Identificación:</strong> <span id="cliente-identificacion"></span>
+        </div>
+        <div class="mb-2">
+            <strong>Teléfono:</strong> <span id="cliente-telefono"></span>
+        </div>
+        <div class="mb-2">
+            <strong>Dirección:</strong>
+            <input type="text" id="direccion" class="form-control mt-1">
+        </div>
+        <div class="mb-2">
+            <strong>Fecha y Hora de Reserva:</strong>
+            <input type="datetime-local" id="fecha-reserva" class="form-control mt-1">
+        </div>
+        <div class="mb-2">
+            <strong>Fecha de Fin de Reserva:</strong>
+            <input type="datetime-local" id="fecha-fin-reserva" class="form-control mt-1">
+        </div>
+        <div class="mb-2">
+            <strong>Cantidad de Unidades:</strong>
+            <input type="number" id="cantidad-unidades" class="form-control mt-1" min="1" value="1">
+        </div>
+        <button type="button" class="btn btn-cerulean mt-3 rounded-pill shadow" id="btn-siguiente">
+            <i class="fas fa-arrow-right me-2"></i> Siguiente
+        </button>
+    </form>
+</div>
+
+<!-- Recuadro Flotante: Confirmación de Reserva -->
+<div id="confirmacion-box" class="floating-box d-none">
+    <h4 class="text-cerulean fw-bold mb-3">
+        <i class="fas fa-check-circle me-2"></i> Confirmación de Reserva
+    </h4>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-2">
+            <strong>Título:</strong> <span id="reserva-titulo"></span>
+        </div>
+        <div class="mb-2">
+            <strong>Precio por Unidad:</strong> $<span id="reserva-precio"></span>
+        </div>
+        <div class="mb-2">
+            <strong>Cantidad de Unidades:</strong> <span id="reserva-cantidad"></span>
+        </div>
+        <div class="mb-2">
+            <strong>Total a Pagar:</strong> $<span id="reserva-total"></span>
+        </div>
+        <button class="btn btn-rust mt-3 rounded-pill shadow" onclick="confirmarReserva()">
+            <i class="fas fa-paper-plane me-2"></i> Confirmar Reserva
+        </button>
+    </form>
+</div>
+
+
+<!-- Overlay -->
+<div id="overlay" class="d-none"></div>
+
+<!-- Iconos de FontAwesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="{% static 'js/cliente/catalogo_servicios.js' %}"></script>
+{% endblock %}
+

@@ -1,0 +1,113 @@
++{% extends "base.html" %}
+
+{% block title %}Editar Servicio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Encabezado con Ícono -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">
+            <i class="fas fa-edit me-2"></i> Editar Servicio
+        </h2>
+        <p class="text-muted">Modifica los detalles del servicio y guarda los cambios.</p>
+    </div>
+
+    <!-- Tarjeta del Formulario -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #6a11cb, #2575fc); border-radius: 0.5rem 0.5rem 0 0;">
+                    <h3 class="card-title fw-bold mb-0">
+                        <i class="fas fa-cogs me-2"></i> Detalles del Servicio
+                    </h3>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Título y Valor por Unidad -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="titulo" class="form-label fw-semibold">
+                                    <i class="fas fa-tag me-2 text-primary"></i> Título del Servicio
+                                </label>
+                                <input type="text" id="titulo" name="titulo" class="form-control rounded-pill shadow-sm" value="{{ servicio.titulo }}" placeholder="Ej. Alquiler de sillas" required>
+                                <div class="invalid-feedback">Por favor, ingresa el título del servicio.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="valor_por_unidad" class="form-label fw-semibold">
+                                    <i class="fas fa-dollar-sign me-2 text-success"></i> Valor por Unidad ($)
+                                </label>
+                                <input type="number" step="0.01" id="valor_por_unidad" name="valor_por_unidad" class="form-control rounded-pill shadow-sm" value="{{ servicio.valor_por_unidad }}" placeholder="Ej. 50.00" required>
+                                <div class="invalid-feedback">Por favor, ingresa un valor válido.</div>
+                            </div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="mb-4">
+                            <label for="descripcion" class="form-label fw-semibold">
+                                <i class="fas fa-file-alt me-2 text-info"></i> Descripción del Servicio
+                            </label>
+                            <textarea id="descripcion" name="descripcion" class="form-control rounded-3 shadow-sm" rows="4" placeholder="Describe el servicio ofrecido" required>{{ servicio.descripcion }}</textarea>
+                            <div class="invalid-feedback">Por favor, ingresa una descripción del servicio.</div>
+                        </div>
+
+                        <!-- Tipo de Servicio e Imagen -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="tipo_servicio" class="form-label fw-semibold">
+                                    <i class="fas fa-cogs me-2 text-warning"></i> Tipo de Servicio
+                                </label>
+                                <select id="tipo_servicio" name="tipo_servicio" class="form-select rounded-pill shadow-sm" required>
+                                    <option value="individual" {% if servicio.tipo_servicio == 'individual' %}selected{% endif %}>Individual</option>
+                                    <option value="combo" {% if servicio.tipo_servicio == 'combo' %}selected{% endif %}>Combo</option>
+                                </select>
+                                <div class="invalid-feedback">Por favor, selecciona el tipo de servicio.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="imagen_referencial" class="form-label fw-semibold">
+                                    <i class="fas fa-image me-2 text-danger"></i> Imagen Referencial
+                                </label>
+                                <input type="file" id="imagen_referencial" name="imagen_referencial" class="form-control rounded-pill shadow-sm" accept="image/*">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-2"></i>Deja en blanco si no deseas cambiar la imagen.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-success rounded-pill py-2 px-4 shadow-lg">
+                                <i class="fas fa-save me-2"></i> Actualizar Servicio
+                            </button>
+                            <a href="{% url 'lista_servicios' %}" class="btn btn-outline-danger rounded-pill py-2 px-4 shadow-lg">
+                                <i class="fas fa-times me-2"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para Validación del Formulario -->
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}
+

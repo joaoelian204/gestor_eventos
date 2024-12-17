@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Reserva Confirmada</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f7;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 50px auto;
+            overflow: hidden;
+        }
+        .header {
+            text-align: center;
+            color: #0056b3;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+        }
+        .details {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .details p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .details strong {
+            display: inline-block;
+            width: 200px;
+            color: #555;
+        }
+        .footer {
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 20px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        .cta-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            📜 Reserva Confirmada
+        </div>
+        <p>Estimado <strong>{{ cliente.nombres }} {{ cliente.apellidos }}</strong>,</p>
+        <p>Nos complace informarte que tu reserva para el servicio <strong>"{{ servicio.titulo }}"</strong> ha sido confirmada.</p>
+
+        <div class="details">
+            <p><strong>Dirección:</strong> {{ direccion }}</p>
+            <p><strong>Fecha y Hora de Inicio:</strong> {{ fecha_hora_reserva }}</p>
+            <p><strong>Fecha y Hora de Fin:</strong> {{ fecha_fin_reserva }}</p>
+            <p><strong>Cantidad de Unidades:</strong> {{ cantidad_unidades }}</p>
+            <p><strong>Total a Pagar:</strong> <strong style="color: #28a745;">${{ costo_total }}</strong></p>
+        </div>
+
+        <p>Gracias por elegir nuestros servicios. Si necesitas más información, no dudes en contactarnos.</p>
+
+        <div class="footer">
+            <p>&copy; 2024 Tu Empresa. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>
+

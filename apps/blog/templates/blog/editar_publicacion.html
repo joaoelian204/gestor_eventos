@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Editar Publicación{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <!-- Título Principal -->
+    <h2 class="mb-5 text-center text-warning fw-bold">
+        <i class="fas fa-edit me-2"></i>Editar Publicación
+    </h2>
+
+    <!-- Formulario de Edición -->
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <!-- Campo Título -->
+                <div class="mb-4">
+                    <label for="id_titulo" class="form-label fw-bold text-secondary">
+                        <i class="fas fa-heading me-2 text-primary"></i>Título de la Publicación
+                    </label>
+                    {{ form.titulo }}
+                </div>
+
+                <!-- Campo Contenido -->
+                <div class="mb-4">
+                    <label for="id_contenido" class="form-label fw-bold text-secondary">
+                        <i class="fas fa-align-left me-2 text-primary"></i>Contenido de la Publicación
+                    </label>
+                    {{ form.contenido }}
+                </div>
+
+                <!-- Imagen Principal Actual -->
+                {% if publicacion.imagen_principal %}
+                <div class="mb-4 text-center">
+                    <label class="form-label fw-bold text-secondary">
+                        <i class="fas fa-image me-2 text-primary"></i>Imagen Principal Actual
+                    </label>
+                    <div class="d-flex justify-content-center">
+                        <img src="{{ publicacion.imagen_principal.url }}" alt="Imagen Principal Actual" class="img-thumbnail mb-3 shadow-sm" style="max-width: 250px; height: auto;">
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Campo para Reemplazar Imagen Principal -->
+                <div class="mb-4">
+                    <label for="id_imagen_principal" class="form-label fw-bold text-secondary">
+                        <i class="fas fa-upload me-2 text-primary"></i>Reemplazar Imagen Principal
+                    </label>
+                    {{ form.imagen_principal }}
+                    <div class="form-text text-muted">
+                        <i class="fas fa-info-circle me-1"></i>Sube una nueva imagen si deseas reemplazar la actual.
+                    </div>
+                </div>
+
+                <!-- Galería de Imágenes Existente -->
+                {% if publicacion.galeria.all %}
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-secondary">
+                        <i class="fas fa-images me-2 text-success"></i>Imágenes de la Galería Actual
+                    </label>
+                    <div class="row g-3">
+                        {% for imagen in publicacion.galeria.all %}
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="position-relative">
+                                <img src="{{ imagen.imagen.url }}" alt="Imagen de la Galería" class="img-thumbnail shadow-sm" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px;">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Campo para Subir Nuevas Imágenes a la Galería -->
+                <div class="mb-4">
+                    <label for="id_galeria" class="form-label fw-bold text-secondary">
+                        <i class="fas fa-upload me-2 text-success"></i>Subir Nuevas Imágenes a la Galería
+                    </label>
+                    <input type="file" name="galeria" id="id_galeria" class="form-control" multiple>
+                    <div class="form-text text-muted">
+                        <i class="fas fa-info-circle me-1"></i>Puedes seleccionar múltiples imágenes manteniendo presionada la tecla <strong>Ctrl</strong> (Cmd en Mac).
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-flex justify-content-center gap-4">
+                    <button type="submit" class="btn btn-warning btn-lg px-4">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                    <a href="{% url 'gestor_publicaciones' %}" class="btn btn-secondary btn-lg px-4">
+                        <i class="fas fa-arrow-left me-2"></i>Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

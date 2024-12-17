@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Vista Previa del Negocio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4">
+                <!-- Encabezado con ícono -->
+                <div class="card-header text-white text-center py-4" 
+                     style="background: linear-gradient(135deg, #2575fc, #6a11cb); border-radius: 0.5rem 0.5rem 0 0;">
+                    <h2 class="card-title fw-bold mb-0" style="font-size: 1.75rem;">
+                        <i class="fas fa-store me-2"></i> Vista Previa del Negocio
+                    </h2>
+                </div>
+
+                <div class="card-body p-5 text-center">
+                    <!-- Logo del negocio más grande -->
+                    <div class="mb-4">
+                        {% if negocio.logo %}
+                            <img src="{{ negocio.logo.url }}" alt="Logo del Negocio" 
+                                 class="shadow-lg border border-primary rounded-4" 
+                                 style="width: 100%; max-width: 350px; height: auto; object-fit: contain;">
+                        {% else %}
+                            <div class="bg-light text-secondary d-flex align-items-center justify-content-center shadow-lg rounded-4" 
+                                 style="width: 100%; max-width: 350px; height: 200px; font-size: 64px;">
+                                <i class="fas fa-store-alt"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Información del negocio -->
+                    <h3 class="text-primary fw-bold mb-4">{{ negocio.nombre }}</h3>
+
+                    <ul class="list-group list-group-flush text-start d-inline-block">
+                        <li class="list-group-item">
+                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                            <strong>Dirección Principal:</strong><br>
+                            <span class="ms-4">{{ negocio.direccion_principal }}</span>
+                        </li>
+                        {% if negocio.direccion_secundaria %}
+                            <li class="list-group-item">
+                                <i class="fas fa-map-marker me-2 text-primary"></i>
+                                <strong>Dirección Secundaria:</strong><br>
+                                <span class="ms-4">{{ negocio.direccion_secundaria }}</span>
+                            </li>
+                        {% endif %}
+                        <li class="list-group-item">
+                            <i class="fas fa-phone-alt me-2 text-primary"></i>
+                            <strong>Teléfono:</strong><br>
+                            <span class="ms-4">{{ negocio.telefono }}</span>
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-envelope me-2 text-primary"></i>
+                            <strong>Correo Electrónico:</strong><br>
+                            <span class="ms-4">
+                                <a href="mailto:{{ negocio.correo }}" class="text-decoration-none text-primary">{{ negocio.correo }}</a>
+                            </span>
+                        </li>
+                    </ul>
+
+                    <!-- Redes Sociales con íconos -->
+                    <h5 class="mt-5 text-primary">
+                        <i class="fas fa-share-alt me-2"></i> Redes Sociales
+                    </h5>
+                    <div class="d-flex justify-content-center mt-3 gap-4">
+                        {% if negocio.redes_sociales.facebook %}
+                            <a href="{{ negocio.redes_sociales.facebook }}" target="_blank" class="text-decoration-none" style="font-size: 36px; color: #3b5998;">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        {% endif %}
+                        {% if negocio.redes_sociales.instagram %}
+                            <a href="{{ negocio.redes_sociales.instagram }}" target="_blank" class="text-decoration-none" style="font-size: 36px; color: #c13584;">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        {% endif %}
+                        {% if negocio.redes_sociales.twitter %}
+                            <a href="{{ negocio.redes_sociales.twitter }}" target="_blank" class="text-decoration-none" style="font-size: 36px; color: #1da1f2;">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

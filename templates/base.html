@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Configuración básica del documento -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="{% if negocio %}{{ negocio.nombre }} - Tu sitio web de eventos{% else %}Gestión de Eventos{% endif %}">
+
+    <title>{% block title %}{% if negocio %}{{ negocio.nombre }}{% else %}Gestión de Eventos{% endif %}{% endblock %}</title>
+
+    {% load static %}
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/base/base.css' %}">
+
+    {% block extra_css %}
+    {% endblock %}
+</head>
+
+<body>
+    <!-- ============================
+            Barra de Navegación
+            ============================ -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--color-cerulean);">
+        <div class="container">
+            <!-- Logo del negocio con enlace a la página principal -->
+            <a class="navbar-brand d-flex justify-content-center align-items-center mx-auto" href="/" style="height: 150px;">
+                {% if negocio and negocio.logo %}
+                    <img src="{{ negocio.logo.url }}" alt="Logo del Negocio" class="logo-img" style="max-height: 120px; max-width: 100%; object-fit: contain; padding: 5px;">
+                {% else %}
+                    <i class="fas fa-calendar-alt fa-4x me-2" style="color: #fff;"></i>
+                    <span class="fw-bold" style="font-size: 2.5rem; color: #fff;">{{ negocio.nombre|default:"Gestión de Eventos" }}</span>
+                {% endif %}
+            </a>
+
+            <!-- Botón de colapso para navegación en dispositivos pequeños -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Menú de navegación -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        {% include 'partials/menu_autenticado.html' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout_usuario' %}">
+                                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                            </a>
+                        </li>
+                    {% else %}
+                        {% include 'partials/menu_publico.html' %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================
+            Contenido Principal
+            ============================ -->
+    <main class="container py-4">
+        <!-- Mostrar mensajes flash (alertas) si hay notificaciones -->
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-info-circle"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- Bloque de contenido específico de cada plantilla -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- ============================
+            Pie de Página
+            ============================ -->
+    <footer class="mt-auto" style="background-color: var(--color-cerulean); color: var(--color-beige);">
+        <div class="container text-center py-4">
+            {% if negocio %}
+                <p><strong><i class="fas fa-building"></i> {{ negocio.nombre }}</strong></p>
+                <p>
+                    <i class="fas fa-map-marker-alt"></i> Dirección: {{ negocio.direccion_principal }}{% if negocio.direccion_secundaria %} - {{ negocio.direccion_secundaria }}{% endif %}
+                </p>
+                <p>
+                    <i class="fas fa-phone-alt"></i> 
+                    <a href="tel:{{ negocio.telefono }}" style="color: var(--color-beige); text-decoration: none;">{{ negocio.telefono }}</a>
+                </p>
+                <p>
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:{{ negocio.correo }}" style="color: var(--color-beige); text-decoration: none;">{{ negocio.correo }}</a>
+                </p>
+
+                <!-- Iconos de redes sociales -->
+                <div class="social-icons mt-3">
+                    {% if negocio.redes_sociales.facebook %}
+                        <a href="{{ negocio.redes_sociales.facebook }}" target="_blank" class="me-3" style="font-size: 1.8rem;">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                    {% endif %}
+                    {% if negocio.redes_sociales.instagram %}
+                        <a href="{{ negocio.redes_sociales.instagram }}" target="_blank" class="me-3" style="font-size: 1.8rem;">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    {% endif %}
+                    {% if negocio.redes_sociales.twitter %}
+                        <a href="{{ negocio.redes_sociales.twitter }}" target="_blank" class="me-3" style="font-size: 1.8rem;">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    {% endif %}
+                    {% if negocio.redes_sociales.linkedin %}
+                        <a href="{{ negocio.redes_sociales.linkedin }}" target="_blank" style="font-size: 1.8rem;">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p><i class="fas fa-exclamation-triangle"></i> Información del negocio no disponible.</p>
+            {% endif %}
+        </div>
+    </footer>
+
+    <!-- ============================
+            Scripts JS
+            ============================ -->
+
+    <!-- Bootstrap JS para componentes interactivos -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts personalizados globales -->
+    <script src="{% static 'js/base/base.js' %}"></script>
+
+    <!-- Bloque para scripts adicionales específicos de cada plantilla -->
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>
+
+
+
+
+
+
+
