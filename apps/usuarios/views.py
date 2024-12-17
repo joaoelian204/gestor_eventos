@@ -1,11 +1,12 @@
 import secrets
+from smtplib import SMTPException
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
+from django.core.mail import BadHeaderError, send_mail
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
@@ -25,6 +26,7 @@ def registro_usuario(request):
         username = request.POST['username']
         password = request.POST['password']
 
+        # Verifica si el correo o el nombre de usuario ya están registrados
         if Usuario.objects.filter(email=email).exists():
             messages.error(request, 'El correo ya está registrado.')
             return render(request, 'usuarios/registro.html')
@@ -33,6 +35,7 @@ def registro_usuario(request):
             messages.error(request, 'El nombre de usuario ya está en uso.')
             return render(request, 'usuarios/registro.html')
 
+        # Guarda los datos temporales en la sesión
         request.session['temp_user_data'] = {
             'username': username,
             'email': email,
@@ -42,26 +45,26 @@ def registro_usuario(request):
         token = secrets.token_urlsafe(16)
         request.session['temp_user_token'] = token
 
+        # Genera el enlace de activación
         query_params = urlencode({'token': token})
         link_activacion = request.build_absolute_uri(f"/usuarios/completar-registro/?{query_params}")
 
+        # Mensaje HTML para el correo de activación
         mensaje_html = f"""
         <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <div style="max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
                 <h2 style="text-align: center; color: #007BFF;">Completa tu Registro</h2>
                 <p>Hola <strong>{username}</strong>,</p>
-                <p>Gracias por registrarte en nuestra plataforma. Para completar el registro, por favor haz clic en el siguiente enlace:</p>
+                <p>Gracias por registrarte en nuestra plataforma. Para completar el registro, haz clic en el siguiente enlace:</p>
                 <p style="text-align: center;">
                     <a href="{link_activacion}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #28a745; text-decoration: none; border-radius: 5px;">
                         Completar Registro
                     </a>
                 </p>
-                <p>Si el botón no funciona, también puedes copiar y pegar el siguiente enlace en tu navegador:</p>
+                <p>Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:</p>
                 <p style="word-break: break-word; color: #555;">{link_activacion}</p>
-                <p>Esperamos que disfrutes de la experiencia. Si tienes alguna pregunta, no dudes en contactarnos.</p>
-                <p>Saludos,</p>
-                <p>El equipo de soporte.</p>
+                <p>Saludos,<br>El equipo de soporte.</p>
             </div>
         </body>
         </html>
@@ -77,14 +80,14 @@ def registro_usuario(request):
                 fail_silently=False,
             )
             messages.success(request, 'Registro inicial exitoso. Revisa tu correo para continuar.')
-            return redirect('completar_registro')
-        except Exception:
+            return redirect('login_usuario')
+        except (BadHeaderError, SMTPException) as e:
+            # Log del error para depuración
+            print(f"Error al enviar correo: {e}")
             messages.error(request, 'No se pudo enviar el correo. Verifica tu conexión e intenta más tarde.')
             return redirect('registro_usuario')
 
     return render(request, 'usuarios/registro.html')
-
-
 # -------------------- Activación de Cuenta --------------------
 """
 Activa la cuenta de usuario al verificar el token de activación enviado por correo.
@@ -97,12 +100,17 @@ def activar_cuenta(request, uidb64, token):
         user = None
 
     if user is not None and default_token_generator.check_token(user, token):
-        user.is_active = True
-        user.save()
-        login(request, user)
-        messages.success(request, 'Cuenta activada. Completa tu perfil.')
-        return redirect('completar_registro')
+        if not user.is_active:
+            user.is_active = True
+            user.save()
+            login(request, user)
+            messages.success(request, 'Cuenta activada exitosamente. Completa tu perfil.')
+            return redirect('completar_registro')
+        else:
+            messages.warning(request, 'Esta cuenta ya ha sido activada anteriormente.')
+            return redirect('login')
     else:
+        # Evita mostrar el mensaje de error si el usuario ya activó la cuenta correctamente
         return redirect('registro_usuario')
 
 
