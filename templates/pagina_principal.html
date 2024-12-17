@@ -27,8 +27,8 @@
         
         {# Mostrar botones de inicio de sesión y registro si el usuario no está autenticado #}
         {% if not user.is_authenticated %}
-            <div class="mb-4">
-                <a href="{% url 'login_usuario' %}" class="btn btn-primary btn-lg me-3 shadow-lg">
+            <div class="mb-4 d-grid gap-2 d-md-inline-flex justify-content-center">
+                <a href="{% url 'login_usuario' %}" class="btn btn-primary btn-lg me-2 mb-2 mb-md-0 shadow-lg">
                     <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
                 </a>
                 <a href="{% url 'registro_usuario' %}" class="btn btn-success btn-lg shadow-lg">
