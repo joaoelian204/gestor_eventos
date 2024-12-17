@@ -16,7 +16,9 @@ class NegocioForm(forms.ModelForm):
             'direccion_secundaria': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'logo': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
             'facebook': forms.URLInput(attrs={'class': 'form-control'}),
             'instagram': forms.URLInput(attrs={'class': 'form-control'}),
             'twitter': forms.URLInput(attrs={'class': 'form-control'}),
+            
         }
