@@ -28,11 +28,11 @@
             <thead class="bg-gradient text-white text-center" style="background: linear-gradient(135deg, #2575fc, #6a11cb);">
                 <tr>
                     <th scope="col"><i class="fas fa-hashtag me-1"></i> ID</th>
+                    <th scope="col"><i class="fas fa-user me-1"></i> Nombre Completo</th>
                     <th scope="col"><i class="fas fa-id-card me-1"></i> Identificación</th>
-                    <th scope="col"><i class="fas fa-user me-1"></i> Nombres</th>
-                    <th scope="col"><i class="fas fa-user-tag me-1"></i> Apellidos</th>
                     <th scope="col"><i class="fas fa-envelope me-1"></i> Correo</th>
                     <th scope="col"><i class="fas fa-phone me-1"></i> Teléfono</th>
+                    <th scope="col"><i class="fas fa-calendar-alt me-1"></i> Fecha Registro</th>
                     <th scope="col"><i class="fas fa-cogs me-1"></i> Acciones</th>
                 </tr>
             </thead>
@@ -41,20 +41,59 @@
                 {% for cliente in clientes %}
                     <tr>
                         <td><i class="fas fa-id-badge me-1 text-primary"></i> {{ cliente.id }}</td>
+                        <td><i class="fas fa-user-circle me-1 text-success"></i> {{ cliente.nombres }} {{ cliente.apellidos }}</td>
                         <td><i class="fas fa-id-card me-1 text-info"></i> {{ cliente.identificacion }}</td>
-                        <td><i class="fas fa-user-circle me-1 text-success"></i> {{ cliente.nombres }}</td>
-                        <td><i class="fas fa-user-tag me-1 text-success"></i> {{ cliente.apellidos }}</td>
                         <td><i class="fas fa-envelope me-1 text-warning"></i> {{ cliente.correo|default:"No especificado" }}</td>
                         <td><i class="fas fa-phone me-1 text-primary"></i> {{ cliente.telefono|default:"No especificado" }}</td>
+                        <td><i class="fas fa-calendar-alt me-1 text-secondary"></i> {{ cliente.fecha_registro|date:"d/m/Y" }}</td>
                         <td>
                             <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#clienteModal{{ cliente.id }}">
                                 <i class="fas fa-eye me-1"></i> Ver Cliente
                             </button>
                         </td>
                     </tr>
+
+                    <!-- ============================
+                            Modal para Ver Cliente
+                        ============================ -->
+                    <div class="modal fade" id="clienteModal{{ cliente.id }}" tabindex="-1" aria-labelledby="clienteModalLabel{{ cliente.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="clienteModalLabel{{ cliente.id }}">Detalles del Cliente</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-start">
+                                    <p><strong>ID:</strong> {{ cliente.id }}</p>
+                                    <p><strong>Nombre Completo:</strong> {{ cliente.nombres }} {{ cliente.apellidos }}</p>
+                                    <p><strong>Identificación:</strong> {{ cliente.identificacion }}</p>
+                                    <p><strong>Correo:</strong> {{ cliente.correo|default:"No especificado" }}</p>
+                                    <p><strong>Teléfono:</strong> {{ cliente.telefono|default:"No especificado" }}</p>
+                                    <p><strong>Fecha de Registro:</strong> {{ cliente.fecha_registro|date:"d/m/Y" }}</p>
+                                    <p><strong>Nacionalidad:</strong> {{ cliente.nacionalidad|default:"No especificado" }}</p>
+                                    <p><strong>Género:</strong> 
+                                        {% if cliente.genero == 'M' %}
+                                            Masculino
+                                        {% elif cliente.genero == 'F' %}
+                                            Femenino
+                                        {% elif cliente.genero == 'O' %}
+                                            Otro
+                                        {% else %}
+                                            No especificado
+                                        {% endif %}
+                                    </p>
+                                    <p><strong>Usuario:</strong> {{ cliente.usuario.username }}</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">
+                        <td colspan="6" class="text-center py-4 text-muted">
                             <i class="fas fa-exclamation-circle me-2 fa-2x text-warning"></i> No hay clientes disponibles.
                         </td>
                     </tr>
@@ -63,52 +102,26 @@
         </table>
     </div>
 
-    <!-- ============================
-            Controles de Paginación
-        ============================ -->
-    {% if clientes.has_other_pages %}
-        <nav aria-label="Paginación">
-            <div class="d-flex justify-content-center align-items-center mt-4">
-
-                <!-- Botón Anterior -->
-                {% if clientes.has_previous %}
-                    <a class="btn btn-outline-primary rounded-circle shadow-sm me-2" href="?page={{ clientes.previous_page_number }}" style="width: 40px; height: 40px;">
-                        <i class="fas fa-chevron-left"></i>
-                    </a>
-                {% endif %}
-
-                <!-- Números de Página -->
-                <ul class="pagination mb-0">
-                    {% for num in clientes.paginator.page_range %}
-                        {% if clientes.number == num %}
-                            <li class="page-item active">
-                                <span class="page-link rounded-pill shadow-sm">{{ num }}</span>
-                            </li>
-                        {% elif num > clientes.number|add:'-3' and num < clientes.number|add:'3' %}
-                            <li class="page-item">
-                                <a class="page-link rounded-pill shadow-sm" href="?page={{ num }}">{{ num }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-
-                <!-- Botón Siguiente -->
-                {% if clientes.has_next %}
-                    <a class="btn btn-outline-primary rounded-circle shadow-sm ms-2" href="?page={{ clientes.next_page_number }}" style="width: 40px; height: 40px;">
-                        <i class="fas fa-chevron-right"></i>
-                    </a>
-                {% endif %}
-
-            </div>
-        </nav>
-    {% endif %}
-
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/dueño/gestionar_clientes.js' %}"></script>
+<!-- ============================
+    Script para Cerrar Menús Desplegables
+============================ -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var dropdownItems = document.querySelectorAll('.dropdown-item');
+        dropdownItems.forEach(function (item) {
+            item.addEventListener('click', function () {
+                var dropdownToggle = document.querySelector('.dropdown-toggle.show');
+                if (dropdownToggle) {
+                    dropdownToggle.click();
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
-
 
