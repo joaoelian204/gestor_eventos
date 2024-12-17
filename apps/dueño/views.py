@@ -65,7 +65,7 @@ def gestion_reservas(request):
     
     # Obtener todas las reservas
     reservas_list = Alquiler.objects.all().order_by('-fecha_hora_reserva')
-    paginator = Paginator(reservas_list, 10)
+    paginator = Paginator(reservas_list, 4)
     page_number = request.GET.get('page')
     reservas = paginator.get_page(page_number)
 
