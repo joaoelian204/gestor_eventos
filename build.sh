@@ -22,4 +22,3 @@ if not User.objects.filter(username=username).exists(): \
     print('Superuser created successfully.'); \
 else: \
     print('Superuser already exists.');" | python manage.py shell
-
