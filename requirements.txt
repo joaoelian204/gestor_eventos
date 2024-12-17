@@ -26,3 +26,5 @@ urllib3==2.2.3
 weasyprint==63.0
 webencodings==0.5.1
 zopfli==0.2.3.post1
+gunicorn==21.2.0
+
