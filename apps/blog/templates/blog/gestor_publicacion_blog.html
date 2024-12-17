@@ -1,136 +1,113 @@
-{% extends 'base.html' %}
-
-{% block title %}Gestionar Reservas{% endblock %}
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Gestor de Publicaciones de Blog{% endblock %}
 
 {% block content %}
+<div class="container mt-5 position-relative">
+    <!-- Mostrar Mensajes -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-<!-- ============================
-        Contenedor Principal
-    ============================ -->
-<div class="container py-5">
+    <!-- Título Principal -->
+    <h2 class="mb-4 text-center text-primary fw-bold">
+        <i class="fas fa-cogs me-2"></i>Gestor de Publicaciones de Blog
+    </h2>
 
-    <!-- ============================
-            Encabezado Principal
-        ============================ -->
-    <div class="text-center mb-5">
-        <h2 class="fw-bold text-primary">
-            <i class="fas fa-tasks me-2"></i> Gestionar Reservas
-        </h2>
-        <p class="text-muted">Administra, edita y elimina las reservas de tus clientes de manera eficiente.</p>
+    <!-- Botón para Crear Publicación -->
+    <div class="mb-4 text-end">
+        <a href="{% url 'crear_publicacion' %}" class="btn btn-success btn-lg" title="Crear una nueva publicación">
+            <i class="fas fa-plus-circle me-2"></i>Crear Publicación
+        </a>
     </div>
 
-    <!-- ============================
-            Tabla de Reservas
-        ============================ -->
+    <!-- Tabla de Publicaciones -->
     <div class="table-responsive">
-        <table class="table table-hover table-striped shadow-sm rounded overflow-hidden">
-            <thead class="bg-gradient text-white text-center" style="background: linear-gradient(135deg, #2575fc, #6a11cb);">
+        <table class="table table-hover table-bordered text-center align-middle shadow-sm" aria-label="Tabla de publicaciones del blog">
+            <thead class="table-dark">
                 <tr>
-                    <th scope="col"><i class="fas fa-hashtag me-1"></i> ID</th>
-                    <th scope="col"><i class="fas fa-user me-1"></i> Cliente</th>
-                    <th scope="col"><i class="fas fa-concierge-bell me-1"></i> Servicio</th>
-                    <th scope="col"><i class="fas fa-calendar-alt me-1"></i> Fecha Reserva</th>
-                    <th scope="col"><i class="fas fa-calendar-check me-1"></i> Fecha Finalización</th>
-                    <th scope="col"><i class="fas fa-flag me-1"></i> Estado</th>
-                    <th scope="col"><i class="fas fa-cogs me-1"></i> Acciones</th>
+                    <th scope="col"><i class="fas fa-hashtag me-1"></i>ID</th>
+                    <th scope="col"><i class="fas fa-calendar-alt me-1"></i>Fecha de Creación</th>
+                    <th scope="col"><i class="fas fa-edit me-1"></i>Fecha de Edición</th>
+                    <th scope="col"><i class="fas fa-eye me-1"></i>Visualizaciones</th>
+                    <th scope="col"><i class="fas fa-heart me-1"></i>Me Gusta</th>
+                    <th scope="col"><i class="fas fa-user me-1"></i>Autor</th>
+                    <th scope="col"><i class="fas fa-tools me-1"></i>Acciones</th>
                 </tr>
             </thead>
-
-            <tbody class="text-center align-middle">
-                {% for reserva in reservas %}
-                    <tr>
-                        <td><i class="fas fa-id-badge me-1 text-primary"></i> {{ reserva.id }}</td>
-                        <td><i class="fas fa-user-circle me-1 text-success"></i> {{ reserva.cliente.nombres }} {{ reserva.cliente.apellidos }}</td>
-                        <td><i class="fas fa-concierge-bell me-1 text-info"></i> {{ reserva.servicio.titulo }}</td>
-                        <td><i class="fas fa-calendar-alt me-1 text-warning"></i> {{ reserva.fecha_hora_reserva|date:"d/m/Y H:i" }}</td>
-                        <td>
-                            <i class="fas fa-calendar-check me-1 text-primary"></i>
-                            {% if reserva.fecha_fin_reserva %}
-                                {{ reserva.fecha_fin_reserva|date:"d/m/Y H:i" }}
-                            {% else %}
-                                <span class="text-muted">No especificada</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span class="badge 
-                                {% if reserva.estado == 'finalizado' %}bg-success
-                                {% elif reserva.estado == 'en_curso' %}bg-info
-                                {% elif reserva.estado == 'pendiente' %}bg-warning text-dark
-                                {% elif reserva.estado == 'cancelado' %}bg-danger
-                                {% else %}bg-secondary{% endif %}">
-                                <i class="fas fa-flag me-1"></i> {{ reserva.estado|capfirst }}
-                            </span>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#clienteModal{{ reserva.cliente.id }}">
-                                <i class="fas fa-eye me-1"></i> Ver Cliente
-                            </button>
-                        </td>
-                    </tr>
+            <tbody>
+                {% for publicacion in publicaciones %}
+                <tr>
+                    <td class="fw-bold">{{ publicacion.id }}</td>
+                    <td><i class="fas fa-calendar-check text-success me-1"></i>{{ publicacion.fecha_creacion|date:"d M Y H:i" }}</td>
+                    <td>
+                        {% if publicacion.fecha_edicion %}
+                            <i class="fas fa-calendar-edit text-warning me-1"></i>{{ publicacion.fecha_edicion|date:"d M Y H:i" }}
+                        {% else %}
+                            <span class="text-muted"><i class="fas fa-info-circle me-1"></i>Nunca Editada</span>
+                        {% endif %}
+                    </td>
+                    <td><i class="fas fa-eye text-info me-1"></i>{{ publicacion.visualizaciones }}</td>
+                    <td><i class="fas fa-heart text-danger me-1"></i>{{ publicacion.total_me_gusta }}</td>
+                    <td><i class="fas fa-user-circle text-primary me-1"></i>{{ publicacion.autor }}</td>
+                    <td>
+                        <a href="{% url 'editar_publicacion' publicacion.id %}" class="btn btn-sm btn-warning me-2" title="Editar publicación">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </a>
+                        <a href="{% url 'eliminar_publicacion' publicacion.id %}" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash-alt me-1"></i>Eliminar
+                        </a>
+                    </td>
+                </tr>
                 {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">
-                            <i class="fas fa-exclamation-circle me-2 fa-2x text-warning"></i> No hay reservas disponibles.
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        <i class="fas fa-info-circle me-2"></i>No hay publicaciones disponibles.
+                    </td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
-    <!-- ============================
-            Controles de Paginación
-        ============================ -->
-    {% if reservas.has_other_pages %}
-        <nav aria-label="Paginación">
-            <div class="d-flex justify-content-center align-items-center mt-4">
-
-                <!-- Botón Anterior -->
-                {% if reservas.has_previous %}
-                    <a class="btn btn-outline-primary rounded-circle shadow-sm me-2" href="?page={{ reservas.previous_page_number }}" style="width: 40px; height: 40px;">
-                        <i class="fas fa-chevron-left"></i>
-                    </a>
-                {% endif %}
-
-                <!-- Números de Página -->
-                <ul class="pagination mb-0">
-                    {% for num in reservas.paginator.page_range %}
-                        {% if reservas.number == num %}
-                            <li class="page-item active">
-                                <span class="page-link rounded-pill shadow-sm">{{ num }}</span>
-                            </li>
-                        {% elif num > reservas.number|add:'-3' and num < reservas.number|add:'3' %}
-                            <li class="page-item">
-                                <a class="page-link rounded-pill shadow-sm" href="?page={{ num }}">{{ num }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-
-                <!-- Botón Siguiente -->
-                {% if reservas.has_next %}
-                    <a class="btn btn-outline-primary rounded-circle shadow-sm ms-2" href="?page={{ reservas.next_page_number }}" style="width: 40px; height: 40px;">
-                        <i class="fas fa-chevron-right"></i>
-                    </a>
-                {% endif %}
-
-            </div>
-        </nav>
-    {% endif %}
-
 </div>
-<!-- Script para Configurar la URL del Formulario de Eliminación en el Modal -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const deleteModal = document.getElementById('deleteModal');
-        deleteModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const deleteUrl = button.getAttribute('data-delete-url');
-            const deleteForm = document.getElementById('deleteForm');
-            deleteForm.action = deleteUrl;
-        });
-    });
-</script>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-trash-alt me-2"></i>Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    ¿Estás seguro de que deseas eliminar esta publicación?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="post" action="{% url 'eliminar_publicacion' 0 %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-check-circle me-1"></i>Eliminar
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times-circle me-1"></i>Cancelar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 
