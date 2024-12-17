@@ -107,17 +107,20 @@
     </div>
 
     <!-- ============================
-            Controles de Paginación
+            Controles de Paginación Mejorados
         ============================ -->
     {% if reservas.has_other_pages %}
         <nav aria-label="Paginación">
-            <div class="d-flex justify-content-center align-items-center mt-4">
+            <div class="d-grid gap-2 d-md-flex justify-content-center align-items-center mt-5">
+
+                <!-- Botón Anterior -->
                 {% if reservas.has_previous %}
-                    <a class="btn btn-outline-primary rounded-circle shadow-sm me-2" href="?page={{ reservas.previous_page_number }}" style="width: 40px; height: 40px;">
+                    <a class="btn btn-outline-primary rounded-circle shadow-sm me-2 mb-2 mb-md-0" href="?page={{ reservas.previous_page_number }}" style="width: 40px; height: 40px;">
                         <i class="fas fa-chevron-left"></i>
                     </a>
                 {% endif %}
 
+                <!-- Números de Página -->
                 <ul class="pagination mb-0">
                     {% for num in reservas.paginator.page_range %}
                         {% if reservas.number == num %}
@@ -132,11 +135,13 @@
                     {% endfor %}
                 </ul>
 
+                <!-- Botón Siguiente -->
                 {% if reservas.has_next %}
-                    <a class="btn btn-outline-primary rounded-circle shadow-sm ms-2" href="?page={{ reservas.next_page_number }}" style="width: 40px; height: 40px;">
+                    <a class="btn btn-outline-primary rounded-circle shadow-sm ms-2 mb-2 mb-md-0" href="?page={{ reservas.next_page_number }}" style="width: 40px; height: 40px;">
                         <i class="fas fa-chevron-right"></i>
                     </a>
                 {% endif %}
+
             </div>
         </nav>
     {% endif %}
@@ -144,4 +149,5 @@
 </div>
 
 {% endblock %}
+
 
