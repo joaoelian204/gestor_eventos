@@ -1,6 +1,7 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.blog.models import Publicacion
 from apps.clientes.models import Cliente
@@ -40,16 +41,22 @@ def dashboard(request):
 
 @user_passes_test(es_dueño)
 def gestion_reservas(request):
-    # Obtener todas las reservas
-    reservas_list = Alquiler.objects.all().order_by('-fecha_hora_reserva')
-
-    # Configurar el paginador para mostrar 10 registros por página
-    paginator = Paginator(reservas_list, 10)
-    page_number = request.GET.get('page')
-    reservas = paginator.get_page(page_number)
-
-    # Renderizar la plantilla con las reservas paginadas
-    return render(request, 'dueño/gestion_reservas.html', {'reservas': reservas})
+    # Actualizar el estado y observación si se recibe una solicitud POST
+    if request.method == 'POST':
+        reserva_id = request.POST.get('reserva_id')
+        nuevo_estado = request.POST.get('estado')
+        observacion = request.POST.get('observacion')
+        
+        reserva = get_object_or_404(Alquiler, id=reserva_id)
+        
+        if nuevo_estado:
+            reserva.estado = nuevo_estado
+        if observacion:
+            reserva.observacion = observacion
+        
+        reserva.save()
+        messages.success(request, 'La reserva se actualizó correctamente.')
+        return redirect('gestion_reservas')
 
 @user_passes_test(es_dueño)
 def gestion_eventos(request):
