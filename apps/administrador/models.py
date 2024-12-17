@@ -1,5 +1,5 @@
+from cloudinary.models import CloudinaryField
 from django.core.exceptions import ValidationError
-from django.core.validators import FileExtensionValidator
 from django.db import models
 
 
@@ -12,10 +12,12 @@ def validate_telefono(value):
 
 class Negocio(models.Model):
     nombre = models.CharField(max_length=100)
-    logo = models.ImageField(
-        upload_to='logos/',
+    logo = CloudinaryField(
+        'imagen',
+        blank=True,
+        null=True,
         default='logos/default_logo.png',
-        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'], message="Solo se permiten archivos JPG, JPEG y PNG.")]
+        help_text="Logo del negocio. Solo se permiten archivos JPG, JPEG y PNG."
     )
     direccion_principal = models.CharField(max_length=150)
     direccion_secundaria = models.CharField(max_length=150, blank=True, null=True)
