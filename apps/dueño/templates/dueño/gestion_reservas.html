@@ -38,7 +38,7 @@
                 <tr>
                     <th scope="col"><i class="fas fa-hashtag me-1"></i> ID</th>
                     <th scope="col"><i class="fas fa-user me-1"></i> Cliente</th>
-                    <th scope="col"><i class="fas fa-concierge-bell me-1"></i> Servicio</th>
+                    <th scope="col"><i class="fas fa-concierge-bell me-1"></i> Tipo de Reserva</th>
                     <th scope="col"><i class="fas fa-calendar-alt me-1"></i> Fecha Reserva</th>
                     <th scope="col"><i class="fas fa-calendar-check me-1"></i> Fecha Finalización</th>
                     <th scope="col"><i class="fas fa-flag me-1"></i> Estado</th>
@@ -51,7 +51,18 @@
                     <tr>
                         <td><i class="fas fa-id-badge me-1 text-primary"></i> {{ reserva.id }}</td>
                         <td><i class="fas fa-user-circle me-1 text-success"></i> {{ reserva.cliente.nombres }} {{ reserva.cliente.apellidos }}</td>
-                        <td><i class="fas fa-concierge-bell me-1 text-info"></i> {{ reserva.servicio.titulo }}</td>
+                        
+                        <!-- Mostrar Combo o Servicio -->
+                        <td>
+                            {% if reserva.combo %}
+                                <i class="fas fa-gift me-1 text-info"></i> Combo: {{ reserva.combo.nombre }}
+                            {% elif reserva.servicio %}
+                                <i class="fas fa-concierge-bell me-1 text-info"></i> Servicio: {{ reserva.servicio.titulo }}
+                            {% else %}
+                                <span class="text-muted">Sin especificar</span>
+                            {% endif %}
+                        </td>
+                        
                         <td><i class="fas fa-calendar-alt me-1 text-warning"></i> {{ reserva.fecha_hora_reserva|date:"d/m/Y H:i" }}</td>
                         <td>
                             <i class="fas fa-calendar-check me-1 text-primary"></i>
@@ -61,6 +72,8 @@
                                 <span class="text-muted">No especificada</span>
                             {% endif %}
                         </td>
+                        
+                        <!-- Estado de la Reserva -->
                         <td>
                             <span class="badge 
                                 {% if reserva.estado == 'finalizado' %}bg-success
@@ -71,8 +84,9 @@
                                 <i class="fas fa-flag me-1"></i> {{ reserva.estado|capfirst }}
                             </span>
                         </td>
+                        
+                        <!-- Acciones para Modificar Reserva -->
                         <td>
-                            <!-- Formulario para cambiar estado y agregar observación -->
                             <form method="post" action="{% url 'gestion_reservas' %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="reserva_id" value="{{ reserva.id }}">
@@ -107,42 +121,33 @@
     </div>
 
     <!-- ============================
-            Controles de Paginación Mejorados
+            Controles de Paginación
         ============================ -->
     {% if reservas.has_other_pages %}
         <nav aria-label="Paginación">
-            <div class="d-grid gap-2 d-md-flex justify-content-center align-items-center mt-5">
-
-                <!-- Botón Anterior -->
+            <ul class="pagination justify-content-center mt-4">
                 {% if reservas.has_previous %}
-                    <a class="btn btn-outline-primary rounded-circle shadow-sm me-2 mb-2 mb-md-0" href="?page={{ reservas.previous_page_number }}" style="width: 40px; height: 40px;">
-                        <i class="fas fa-chevron-left"></i>
-                    </a>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ reservas.previous_page_number }}" aria-label="Anterior">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
                 {% endif %}
 
-                <!-- Números de Página -->
-                <ul class="pagination mb-0">
-                    {% for num in reservas.paginator.page_range %}
-                        {% if reservas.number == num %}
-                            <li class="page-item active">
-                                <span class="page-link rounded-pill shadow-sm">{{ num }}</span>
-                            </li>
-                        {% elif num > reservas.number|add:'-3' and num < reservas.number|add:'3' %}
-                            <li class="page-item">
-                                <a class="page-link rounded-pill shadow-sm" href="?page={{ num }}">{{ num }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
+                {% for num in reservas.paginator.page_range %}
+                    <li class="page-item {% if reservas.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
 
-                <!-- Botón Siguiente -->
                 {% if reservas.has_next %}
-                    <a class="btn btn-outline-primary rounded-circle shadow-sm ms-2 mb-2 mb-md-0" href="?page={{ reservas.next_page_number }}" style="width: 40px; height: 40px;">
-                        <i class="fas fa-chevron-right"></i>
-                    </a>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ reservas.next_page_number }}" aria-label="Siguiente">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
                 {% endif %}
-
-            </div>
+            </ul>
         </nav>
     {% endif %}
 
