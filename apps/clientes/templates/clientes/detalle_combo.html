@@ -211,35 +211,27 @@
         document.getElementById('overlay').style.display = 'none';
         document.getElementById('confirmacion-box').style.display = 'none';
     }
-    
+
     // Abrir el recuadro flotante de confirmación
     document.querySelector('.btn-reservar').addEventListener('click', () => {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('confirmacion-box').style.display = 'block';
     });
-    
+
     // Evento para confirmar la reserva
     document.getElementById('btn-confirmar').addEventListener('click', () => {
-        const fechaInicio = document.getElementById('fecha-inicio').value.trim();
-        const fechaFin = document.getElementById('fecha-fin').value.trim();
-        const direccion = document.getElementById('direccion').value.trim();
+        const fechaInicio = document.getElementById('fecha-inicio').value;
+        const fechaFin = document.getElementById('fecha-fin').value;
+        const direccion = document.getElementById('direccion').value;
         const clienteId = "{{ cliente_id }}";
         const comboId = "{{ combo.id }}";
         const precioPorUnidad = "{{ combo.precio }}";
-    
-        // Validar que los campos no estén vacíos
-        if (!clienteId || clienteId === 'None') {
-            alert("Debes iniciar sesión para realizar una reserva.");
-            window.location.href = "{% url 'login_usuario' %}";
-            return;
-        }
-    
-        if (!fechaInicio || !fechaFin || !direccion) {
+
+        if (!clienteId || !fechaInicio || !direccion) {
             alert("Todos los campos son obligatorios.");
             return;
         }
-    
-        // Crear el objeto FormData
+
         const data = new FormData();
         data.append('cliente_id', clienteId);
         data.append('combo_id', comboId);
@@ -247,8 +239,7 @@
         data.append('fecha_hora_reserva', fechaInicio);
         data.append('fecha_fin_reserva', fechaFin);
         data.append('precio_por_unidad', precioPorUnidad);
-    
-        // Enviar la solicitud fetch
+
         fetch("{% url 'crear_alquiler' %}", {
             method: 'POST',
             headers: {
@@ -274,6 +265,7 @@
 
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 {% endblock %}
+
 
 
 
