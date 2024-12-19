@@ -230,7 +230,7 @@
         // Validar que los campos no estén vacíos
         if (!clienteId || clienteId === 'None') {
             alert("Debes iniciar sesión para realizar una reserva.");
-            window.location.href = "{% url 'login' %}";
+            window.location.href = "{% url 'login_usuario' %}";
             return;
         }
     
