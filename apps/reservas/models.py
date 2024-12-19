@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 from apps.clientes.models import Cliente
-from apps.servicios.models import Servicio
+from apps.servicios.models import Combo, Servicio
 
 
 class Alquiler(models.Model):
@@ -15,6 +15,7 @@ class Alquiler(models.Model):
     
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE, default=1)
+    combo = models.ForeignKey(Combo, null=True, blank=True, on_delete=models.CASCADE)
     direccion = models.CharField(max_length=255, default="Sin dirección")
     fecha_hora_reserva = models.DateTimeField(default=timezone.now)
     cantidad_unidades = models.PositiveIntegerField(default=1)
@@ -28,4 +29,8 @@ class Alquiler(models.Model):
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
 
     def __str__(self):
-        return f"Alquiler {self.id} - {self.servicio.titulo}"
+        if self.combo:
+            return f"Alquiler {self.id} - Combo: {self.combo.nombre}"
+        elif self.servicio:
+            return f"Alquiler {self.id} - Servicio: {self.servicio.titulo}"
+        return f"Alquiler {self.id} - Sin especificar"
