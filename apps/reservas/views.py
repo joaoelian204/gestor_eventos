@@ -12,7 +12,7 @@ from django.utils.html import strip_tags
 
 from apps.clientes.models import Cliente
 from apps.eventos.models import Evento
-from apps.servicios.models import Servicio
+from apps.servicios.models import Combo, Servicio
 
 from .models import Alquiler
 
