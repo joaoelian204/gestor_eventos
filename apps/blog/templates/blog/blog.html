@@ -78,42 +78,37 @@
             </div>
         {% endif %}
     </div>
-    <!-- Controles de Paginación Mejorados -->
-    <nav aria-label="Paginación">
-        <div class="d-flex justify-content-center align-items-center mt-5">
 
-            <!-- Botón Anterior -->
-            {% if publicaciones.has_previous %}
-                <a class="btn btn-outline-primary rounded-circle shadow-sm me-2" href="?page={{ publicaciones.previous_page_number }}" style="width: 40px; height: 40px;">
-                    <i class="fas fa-chevron-left"></i>
-                </a>
-            {% endif %}
+    <!-- ============================
+            Controles de Paginación
+        ============================ -->
+    {% if publicaciones.has_other_pages %}
+        <nav aria-label="Paginación">
+            <ul class="pagination justify-content-center mt-4">
+                {% if publicaciones.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ publicaciones.previous_page_number }}" aria-label="Anterior">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
 
-            <!-- Números de Página -->
-            <ul class="pagination mb-0">
                 {% for num in publicaciones.paginator.page_range %}
-                    {% if publicaciones.number == num %}
-                        <li class="page-item active">
-                            <span class="page-link rounded-pill shadow-sm">{{ num }}</span>
-                        </li>
-                    {% elif num > publicaciones.number|add:'-3' and num < publicaciones.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link rounded-pill shadow-sm" href="?page={{ num }}">{{ num }}</a>
-                        </li>
-                    {% endif %}
+                    <li class="page-item {% if publicaciones.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
                 {% endfor %}
+
+                {% if publicaciones.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ publicaciones.next_page_number }}" aria-label="Siguiente">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
-
-            <!-- Botón Siguiente -->
-            {% if publicaciones.has_next %}
-                <a class="btn btn-outline-primary rounded-circle shadow-sm ms-2" href="?page={{ publicaciones.next_page_number }}" style="width: 40px; height: 40px;">
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-            {% endif %}
-
-        </div>
-    </nav>
-
+        </nav>
+    {% endif %}
 </div>
 {% endblock %}
 
