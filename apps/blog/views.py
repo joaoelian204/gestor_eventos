@@ -12,22 +12,25 @@ from .models import ImagenPublicacion, Publicacion
 
 logger = logging.getLogger(__name__)
 
+
 def blog(request):
-    # Obtener todas las publicaciones ordenadas por fecha de creación descendente
+    '''
+    Muestra una lista paginada de todas las publicaciones del blog,
+    ordenadas por fecha de creación en orden descendente.
+    '''
     publicaciones_lista = Publicacion.objects.all().order_by('-fecha_creacion')
-    
-    # Crear un paginador para dividir en grupos de 9 publicaciones
     paginator = Paginator(publicaciones_lista, 3)
-    
-    # Obtener el número de página de la solicitud GET (por defecto será la página 1)
     page_number = request.GET.get('page')
-    
-    # Obtener el objeto de la página actual
     publicaciones = paginator.get_page(page_number)
 
     return render(request, 'blog/blog.html', {'publicaciones': publicaciones})
 
+
 def detalle_publicacion(request, pk):
+    '''
+    Muestra los detalles de una publicación específica y permite agregar comentarios.
+    También incrementa el contador de visualizaciones si el usuario está autenticado.
+    '''
     publicacion = get_object_or_404(Publicacion, pk=pk)
     comentarios = publicacion.comentarios.all().order_by('-fecha_creacion')
 
@@ -62,8 +65,12 @@ def detalle_publicacion(request, pk):
     }
     return render(request, 'blog/detalle_publicacion.html', context)
 
+
 @login_required
 def agregar_comentario(request, pk):
+    '''
+    Permite a un usuario autenticado agregar un comentario a una publicación específica.
+    '''
     publicacion = get_object_or_404(Publicacion, pk=pk)
     if request.method == 'POST':
         form = ComentarioForm(request.POST)
@@ -77,15 +84,14 @@ def agregar_comentario(request, pk):
             messages.error(request, 'Error al agregar el comentario.')
     return redirect('detalle_publicacion', pk=pk)
 
+
 @login_required
 @require_POST
 def like_publicacion(request, pk):
+    '''
+    Permite a un usuario dar o quitar "Me Gusta" a una publicación específica.
+    '''
     publicacion = get_object_or_404(Publicacion, pk=pk)
-
-    # Verificar si el usuario está autenticado
-    if not request.user.is_authenticated:
-        messages.error(request, "Debes iniciar sesión o registrarte para dar 'Me Gusta'.")
-        return redirect('login_usuario')
 
     # Alternar el estado del "Me Gusta"
     if publicacion.me_gustas.filter(id=request.user.id).exists():
@@ -95,49 +101,46 @@ def like_publicacion(request, pk):
         publicacion.agregar_me_gusta(request.user)
         messages.success(request, "Has dado 'Me Gusta' a esta publicación.")
 
-    # Redirigir al detalle de la publicación
     return redirect('detalle_publicacion', pk=pk)
 
-# Crear una nueva publicación (solo para usuarios con rol "dueño")
+
 @login_required
 def crear_publicacion(request):
+    '''
+    Permite a un usuario con rol de "dueño" crear una nueva publicación,
+    incluyendo la posibilidad de subir múltiples imágenes.
+    '''
     if request.method == 'POST':
-        print("Recibiendo datos del formulario...")
-        print(f"Archivos en request.FILES: {request.FILES}")
-
         form = PublicacionForm(request.POST, request.FILES)
         if form.is_valid():
             publicacion = form.save(commit=False)
             publicacion.autor = request.user
             publicacion.save()
-            print(f"Publicación '{publicacion.titulo}' guardada correctamente.")
 
             # Manejar múltiples imágenes manualmente
             imagenes = request.FILES.getlist('imagenes')
-            if imagenes:
-                for imagen in imagenes:
-                    ImagenPublicacion.objects.create(publicacion=publicacion, imagen=imagen)
-                    print(f"Imagen guardada: {imagen.name}")
-            else:
-                print("No se recibieron imágenes adicionales.")
+            for imagen in imagenes:
+                ImagenPublicacion.objects.create(publicacion=publicacion, imagen=imagen)
 
             messages.success(request, 'Publicación creada exitosamente.')
             return redirect('blog')
         else:
-            print(f"Errores del formulario: {form.errors}")
             messages.error(request, 'Error al crear la publicación. Revisa los campos e intenta nuevamente.')
     else:
         form = PublicacionForm()
 
     return render(request, 'blog/crear_publicacion.html', {'form': form})
 
+
 @login_required
 def editar_publicacion(request, pk):
+    '''
+    Permite a un usuario con rol de "dueño" editar una publicación existente.
+    '''
     publicacion = get_object_or_404(Publicacion, pk=pk)
 
-    # Verificar si el usuario es el dueño del negocio
     if request.user.rol != 'dueño':
-        messages.error(request, "No tienes permiso para editar esta publicación. Solo el dueño puede realizar esta acción.")
+        messages.error(request, "No tienes permiso para editar esta publicación.")
         return redirect('gestor_publicaciones')
 
     if request.method == 'POST':
@@ -153,35 +156,44 @@ def editar_publicacion(request, pk):
 
     return render(request, 'blog/editar_publicacion.html', {'form': form, 'publicacion': publicacion})
 
+
 @login_required
 def eliminar_publicacion(request, pk):
+    '''
+    Permite a un usuario con rol de "dueño" eliminar una publicación existente.
+    '''
     publicacion = get_object_or_404(Publicacion, pk=pk)
 
-    # Verificar si el usuario es el dueño del negocio
     if request.user.rol != 'dueño':
-        messages.error(request, "No tienes permiso para eliminar esta publicación. Solo el dueño puede realizar esta acción.")
+        messages.error(request, "No tienes permiso para eliminar esta publicación.")
         return redirect('gestor_publicaciones')
 
     publicacion.delete()
     messages.success(request, "La publicación ha sido eliminada correctamente.")
     return redirect('gestor_publicaciones')
 
+
 @login_required
 def gestor_publicaciones(request):
-    # Verificar si el usuario es el dueño del negocio
+    '''
+    Muestra una lista de publicaciones para que un usuario con rol de "dueño" pueda gestionarlas.
+    '''
     if request.user.rol != 'dueño':
         messages.error(request, "No tienes permiso para acceder al gestor de publicaciones.")
         return redirect('pagina_principal')
 
-    # Obtener todas las publicaciones
     publicaciones = Publicacion.objects.all().order_by('-fecha_creacion')
-
     return render(request, 'blog/gestor_publicacion_blog.html', {'publicaciones': publicaciones})
+
 
 @login_required
 def eliminar_imagen_galeria(request, imagen_id):
+    '''
+    Permite a un usuario eliminar una imagen específica de una publicación.
+    '''
     imagen = get_object_or_404(ImagenPublicacion, id=imagen_id)
     publicacion = imagen.publicacion
     imagen.delete()
     return redirect('blog/editar_publicacion', pk=publicacion.id)
+
 
