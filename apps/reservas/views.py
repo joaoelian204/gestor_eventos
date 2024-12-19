@@ -33,7 +33,6 @@ def listar_reservas(request):
     return render(request, 'clientes/reservas_activas.html', {'reservas': reservas})
 
 # Crear una nueva reserva
-@user_passes_test(es_dueño)
 def crear_alquiler(request):
     if request.method == 'POST':
         try:
