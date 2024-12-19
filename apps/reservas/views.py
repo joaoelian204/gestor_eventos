@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.core.mail import EmailMultiAlternatives
+from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -67,62 +68,60 @@ def crear_alquiler(request):
                     return JsonResponse({'success': False, 'message': 'La fecha de fin tiene un formato incorrecto.'})
 
             # Crear alquiler de servicio o combo según corresponda
-            if servicio_id:
-                servicio = get_object_or_404(Servicio, id=servicio_id)
+            with transaction.atomic():
+                if servicio_id:
+                    servicio = get_object_or_404(Servicio, id=servicio_id)
 
-                # Verificar si ya existe una reserva activa para el servicio
-                if Alquiler.objects.filter(
-                    cliente=cliente,
-                    servicio=servicio,
-                    estado__in=['en_curso', 'pendiente'],
-                    fecha_fin_reserva__gte=timezone.now()
-                ).exists():
-                    return JsonResponse({'success': False, 'message': 'Ya tienes una reserva activa para este servicio.'})
+                    # Verificar si ya existe una reserva activa para el servicio
+                    if Alquiler.objects.filter(
+                        cliente=cliente,
+                        servicio=servicio,
+                        estado__in=['en_curso'],
+                        fecha_fin_reserva__gte=timezone.now()
+                    ).exists():
+                        return JsonResponse({'success': False, 'message': 'Ya tienes una reserva activa para este servicio.'})
 
-                # Calcular el costo total
-                costo_total = cantidad_unidades * precio_por_unidad
+                    # Calcular el costo total
+                    costo_total = cantidad_unidades * precio_por_unidad
 
-                # Crear la nueva reserva de servicio
-                Alquiler.objects.create(
-                    cliente=cliente,
-                    servicio=servicio,
-                    direccion=direccion,
-                    fecha_hora_reserva=fecha_hora_reserva,
-                    fecha_fin_reserva=fecha_fin_reserva,
-                    cantidad_unidades=cantidad_unidades,
-                    costo_total=costo_total,
-                    estado='en_curso'
-                )
+                    # Crear la nueva reserva de servicio
+                    Alquiler.objects.create(
+                        cliente=cliente,
+                        servicio=servicio,
+                        direccion=direccion,
+                        fecha_hora_reserva=fecha_hora_reserva,
+                        fecha_fin_reserva=fecha_fin_reserva,
+                        cantidad_unidades=cantidad_unidades,
+                        costo_total=costo_total,
+                        estado='en_curso'
+                    )
 
-            elif combo_id:
-                combo = get_object_or_404(Combo, id=combo_id)
+                elif combo_id:
+                    combo = get_object_or_404(Combo, id=combo_id)
 
-                # Verificar si ya existe una reserva activa para el combo
-                if Alquiler.objects.filter(
-                    cliente=cliente,
-                    combo=combo,
-                    estado__in=['en_curso', 'pendiente'],
-                    fecha_fin_reserva__gte=timezone.now()
-                ).exists():
-                    return JsonResponse({'success': False, 'message': 'Ya tienes una reserva activa para este combo.'})
+                    # Verificar si ya existe una reserva activa para el combo sin que la fecha fin haya pasado
+                    if Alquiler.objects.filter(
+                        cliente=cliente,
+                        combo=combo,
+                        estado__in=['en_curso'],
+                        fecha_fin_reserva__gte=timezone.now()
+                    ).exists():
+                        return JsonResponse({'success': False, 'message': 'Ya tienes una reserva activa para este combo. No puedes reservar el mismo combo hasta que finalice la reserva actual.'})
 
-                # Calcular el costo total para el combo
-                costo_total = float(combo.precio)
+                    # Calcular el costo total para el combo
+                    costo_total = float(combo.precio)
 
-                # Crear la nueva reserva de combo
-                Alquiler.objects.create(
-                    cliente=cliente,
-                    combo=combo,
-                    direccion=direccion,
-                    fecha_hora_reserva=fecha_hora_reserva,
-                    fecha_fin_reserva=fecha_fin_reserva,
-                    cantidad_unidades=1,
-                    costo_total=costo_total,
-                    estado='en_curso'
-                )
-
-            else:
-                return JsonResponse({'success': False, 'message': 'Debe seleccionarse un servicio o un combo para la reserva.'})
+                    # Crear la nueva reserva de combo
+                    Alquiler.objects.create(
+                        cliente=cliente,
+                        combo=combo,
+                        direccion=direccion,
+                        fecha_hora_reserva=fecha_hora_reserva,
+                        fecha_fin_reserva=fecha_fin_reserva,
+                        cantidad_unidades=1,
+                        costo_total=costo_total,
+                        estado='en_curso'
+                    )
 
             # Enviar correo de confirmación al cliente
             if cliente.correo:
