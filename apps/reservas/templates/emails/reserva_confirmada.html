@@ -77,13 +77,25 @@
         <div class="header">
             📜 Reserva Confirmada
         </div>
+
         <p>Estimado <strong>{{ cliente.nombres }} {{ cliente.apellidos }}</strong>,</p>
-        <p>Nos complace informarte que tu reserva para el servicio <strong>"{{ servicio.titulo }}"</strong> ha sido confirmada.</p>
+
+        {% if combo %}
+            <p>Nos complace informarte que tu reserva para el combo <strong>"{{ combo.nombre }}"</strong> ha sido confirmada.</p>
+        {% elif servicio %}
+            <p>Nos complace informarte que tu reserva para el servicio <strong>"{{ servicio.titulo }}"</strong> ha sido confirmada.</p>
+        {% else %}
+            <p>Nos complace informarte que tu reserva ha sido confirmada.</p>
+        {% endif %}
 
         <div class="details">
             <p><strong>Dirección:</strong> {{ direccion }}</p>
             <p><strong>Fecha y Hora de Inicio:</strong> {{ fecha_hora_reserva }}</p>
-            <p><strong>Fecha y Hora de Fin:</strong> {{ fecha_fin_reserva }}</p>
+            {% if fecha_fin_reserva %}
+                <p><strong>Fecha y Hora de Fin:</strong> {{ fecha_fin_reserva }}</p>
+            {% else %}
+                <p><strong>Fecha y Hora de Fin:</strong> No especificada</p>
+            {% endif %}
             <p><strong>Cantidad de Unidades:</strong> {{ cantidad_unidades }}</p>
             <p><strong>Total a Pagar:</strong> <strong style="color: #28a745;">${{ costo_total }}</strong></p>
         </div>
