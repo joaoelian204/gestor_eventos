@@ -12,7 +12,6 @@ from django.utils import timezone
 from django.utils.html import strip_tags
 
 from apps.clientes.models import Cliente
-from apps.eventos.models import Evento
 from apps.servicios.models import Combo, Servicio
 
 from .models import Alquiler
@@ -20,19 +19,29 @@ from .models import Alquiler
 
 # Verifica si el usuario es dueño
 def es_dueño(user):
+    ''' 
+    Verifica si el usuario está autenticado y tiene el rol de 'dueño'.
+    Retorna True si el usuario es dueño, de lo contrario, False.
+    '''
     return user.is_authenticated and user.rol == 'dueño'
 
-# Listar reservas activas
 
+# Listar reservas activas
 def listar_reservas(request):
+    ''' 
+    Muestra una lista de reservas activas asociadas al cliente actual.
+    '''
     cliente = request.user.clientes
-    # Obtener todas las reservas relacionadas con el cliente actual
     reservas = Alquiler.objects.filter(cliente=cliente)
-    
     return render(request, 'clientes/reservas_activas.html', {'reservas': reservas})
 
 
+# Crear una reserva (alquiler) de un servicio o combo
 def crear_alquiler(request):
+    ''' 
+    Crea una nueva reserva (alquiler) de un servicio o combo. 
+    Valida los datos del formulario y envía un correo de confirmación al cliente.
+    '''
     if request.method == 'POST':
         try:
             # Capturar y validar los datos del formulario
@@ -73,12 +82,7 @@ def crear_alquiler(request):
                     servicio = get_object_or_404(Servicio, id=servicio_id)
 
                     # Verificar si ya existe una reserva activa para el servicio
-                    if Alquiler.objects.filter(
-                        cliente=cliente,
-                        servicio=servicio,
-                        estado__in=['en_curso'],
-                        fecha_fin_reserva__gte=timezone.now()
-                    ).exists():
+                    if Alquiler.objects.filter(cliente=cliente, servicio=servicio, estado='en_curso', fecha_fin_reserva__gte=timezone.now()).exists():
                         return JsonResponse({'success': False, 'message': 'Ya tienes una reserva activa para este servicio.'})
 
                     # Calcular el costo total
@@ -99,14 +103,9 @@ def crear_alquiler(request):
                 elif combo_id:
                     combo = get_object_or_404(Combo, id=combo_id)
 
-                    # Verificar si ya existe una reserva activa para el combo sin que la fecha fin haya pasado
-                    if Alquiler.objects.filter(
-                        cliente=cliente,
-                        combo=combo,
-                        estado__in=['en_curso'],
-                        fecha_fin_reserva__gte=timezone.now()
-                    ).exists():
-                        return JsonResponse({'success': False, 'message': 'Ya tienes una reserva activa para este combo. No puedes reservar el mismo combo hasta que finalice la reserva actual.'})
+                    # Verificar si ya existe una reserva activa para el combo
+                    if Alquiler.objects.filter(cliente=cliente, combo=combo, estado='en_curso', fecha_fin_reserva__gte=timezone.now()).exists():
+                        return JsonResponse({'success': False, 'message': 'Ya tienes una reserva activa para este combo.'})
 
                     # Calcular el costo total para el combo
                     costo_total = float(combo.precio)
@@ -152,29 +151,28 @@ def crear_alquiler(request):
 
             return JsonResponse({'success': True, 'message': 'Reserva creada exitosamente.'})
 
-        # Manejo de errores específicos
-        except Cliente.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Cliente no encontrado.'})
-        except Servicio.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Servicio no encontrado.'})
-        except Combo.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Combo no encontrado.'})
-        except ValueError as e:
-            return JsonResponse({'success': False, 'message': f'Error en los datos numéricos: {e}'})
         except Exception as e:
             return JsonResponse({'success': False, 'message': f'Error inesperado: {e}'})
 
     return JsonResponse({'success': False, 'message': 'Método no permitido.'})
 
+
 # Ver detalle de una reserva
 @user_passes_test(es_dueño)
 def detalle_reserva(request, reserva_id):
+    ''' 
+    Muestra los detalles de una reserva específica.
+    '''
     reserva = get_object_or_404(Alquiler, pk=reserva_id)
     return render(request, 'reservas/detalle_reserva.html', {'reserva': reserva})
+
 
 # Editar una reserva
 @user_passes_test(es_dueño)
 def editar_reserva(request, reserva_id):
+    ''' 
+    Permite editar los detalles de una reserva específica.
+    '''
     reserva = get_object_or_404(Alquiler, pk=reserva_id)
     if request.method == 'POST':
         reserva.fecha_alquiler = request.POST['fecha_alquiler']
@@ -186,18 +184,14 @@ def editar_reserva(request, reserva_id):
         return redirect('lista_reservas')
     return render(request, 'reservas/editar_reserva.html', {'reserva': reserva})
 
+
 # Eliminar una reserva
 @user_passes_test(es_dueño)
 def eliminar_reserva(request, reserva_id):
+    ''' 
+    Permite eliminar una reserva específica.
+    '''
     reserva = get_object_or_404(Alquiler, pk=reserva_id)
     reserva.delete()
     messages.success(request, 'Reserva eliminada correctamente.')
     return redirect('lista_reservas')
-
-def reservar_evento(request, evento_id):
-    evento = get_object_or_404(Evento, id=evento_id)
-    return render(request, 'eventos/reservar_evento.html', {'evento': evento})
-
-def detalle_evento(request, evento_id):
-    evento = get_object_or_404(Evento, id=evento_id)
-    return render(request, 'eventos/detalle_evento.html', {'evento': evento})
