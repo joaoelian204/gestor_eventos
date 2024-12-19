@@ -17,17 +17,25 @@ from apps.reservas.models import Alquiler
 def es_dueño(user):
     return user.is_authenticated and user.rol == 'dueño'
 
-# Listar reservas activas
+# Generar factura en PDF para una reserva de combo o servicio
 def generar_factura_pdf(request, reserva_id):
-    # Obtener la reserva y el negocio
+    # Obtener la reserva para el cliente autenticado
     reserva = get_object_or_404(Alquiler, id=reserva_id, cliente=request.user.cliente)
-    negocio = Negocio.objects.first()  # Suponiendo que solo hay un registro de negocio
+    negocio = Negocio.objects.first()
 
     # Calcular el precio unitario
     if reserva.cantidad_unidades > 0:
         precio_unitario = reserva.costo_total / reserva.cantidad_unidades
     else:
         precio_unitario = 0.00  # Evitar división por cero
+
+    # Determinar el tipo de reserva: combo o servicio
+    if reserva.combo:
+        nombre_reserva = f"Combo: {reserva.combo.nombre}"
+    elif reserva.servicio:
+        nombre_reserva = f"Servicio: {reserva.servicio.titulo}"
+    else:
+        nombre_reserva = "Reserva sin especificar"
 
     # Crear el nombre del archivo PDF
     nombre_archivo = f"factura_{reserva.id}.pdf"
@@ -36,6 +44,7 @@ def generar_factura_pdf(request, reserva_id):
     context = {
         'negocio': negocio,
         'reserva': reserva,
+        'nombre_reserva': nombre_reserva,
         'fecha_emision': datetime.now().strftime('%d/%m/%Y'),
         'total': reserva.costo_total,
         'precio_unitario': round(precio_unitario, 2),
