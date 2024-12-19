@@ -10,6 +10,10 @@ from apps.servicios.models import Combo, ImagenCombo, Servicio
 
 @login_required
 def catalogo_servicios(request):
+    '''
+    Muestra el catálogo de servicios y combos disponibles.
+    Permite filtrar por búsqueda de texto y por tipo (servicio o combo).
+    '''
     query = request.GET.get('q')
     tipo = request.GET.get('tipo')
 
@@ -42,7 +46,9 @@ def catalogo_servicios(request):
     
 
 def detalle_combo(request, combo_id):
-    """Muestra los detalles de un combo específico."""
+    ''' 
+    Muestra los detalles de un combo específico, incluyendo imágenes y servicios incluidos.
+    '''
     combo = get_object_or_404(Combo, id=combo_id)
     imagenes = ImagenCombo.objects.filter(combo=combo)
     servicios_incluidos = combo.servicios_incluidos.all()
@@ -62,26 +68,55 @@ def detalle_combo(request, combo_id):
 
 @login_required
 def reservas_activas(request):
-    # Obtén las reservas activas del cliente, excluyendo las reservas finalizadas
-    reservas = Alquiler.objects.filter(cliente=request.user.cliente).exclude(estado='finalizado')
+    ''' 
+    Muestra una lista paginada de las reservas activas del cliente actual.
+    Excluye las reservas finalizadas y las ordena por fecha descendente.
+    '''
+    reservas_list = Alquiler.objects.filter(
+        cliente=request.user.cliente
+    ).exclude(
+        estado='finalizado'
+    ).order_by('-fecha_hora_reserva')
+
+    # Pagina las reservas (8 por página)
+    paginator = Paginator(reservas_list, 8)
+    page_number = request.GET.get('page')
+    reservas = paginator.get_page(page_number)
 
     return render(request, 'clientes/reservas_activas.html', {'reservas': reservas})
 
 
 @login_required
 def historial_reservas(request):
-    # Obtén las reservas finalizadas del cliente
-    historial = Alquiler.objects.filter(cliente=request.user.cliente, estado='finalizado')
+    ''' 
+    Muestra una lista paginada del historial de reservas finalizadas del cliente actual.
+    Las reservas se muestran desde la más reciente a la más antigua.
+    '''
+    historial_list = Alquiler.objects.filter(
+        cliente=request.user.cliente,
+        estado='finalizado'
+    ).order_by('-fecha_hora_reserva')
 
-    return render(request, 'clientes/historial_reservas.html', {'historial': historial})
+    # Pagina el historial de reservas (8 por página)
+    paginator = Paginator(historial_list, 8)
+    page_number = request.GET.get('page')
+    reservas = paginator.get_page(page_number)
+
+    return render(request, 'clientes/historial_reservas.html', {'reservas': reservas})
 
 @login_required
 def perfil_cliente(request):
+    ''' 
+    Muestra el perfil del cliente actual.
+    '''
     cliente = request.user.cliente
     return render(request, 'clientes/perfil_cliente.html', {'cliente': cliente})
 
 @login_required
 def editar_perfil_cliente(request):
+    ''' 
+    Permite al cliente editar su información personal como nombres, apellidos, identificación, correo, teléfono, etc.
+    '''
     cliente = request.user.cliente
     if request.method == 'POST':
         cliente.nombres = request.POST.get('nombres')
@@ -101,6 +136,10 @@ def editar_perfil_cliente(request):
 
 @login_required
 def cambiar_contrasena_cliente(request):
+    ''' 
+    Permite al cliente cambiar su contraseña. 
+    Se verifica que las contraseñas coincidan y que cumplan con los requisitos de seguridad.
+    '''
     if request.method == 'POST':
         nueva_contrasena = request.POST.get('password').strip()
         confirmar_contrasena = request.POST.get('confirm_password').strip()
