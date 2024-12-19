@@ -18,7 +18,7 @@
         z-index: 1001;
         width: 100%;
         max-width: 500px;
-        display: none; /* Oculto por defecto */
+        display: none;
     }
 
     /* Overlay para oscurecer el fondo */
@@ -30,7 +30,7 @@
         height: 100%;
         background: rgba(0, 0, 0, 0.5);
         z-index: 1000;
-        display: none; /* Oculto por defecto */
+        display: none;
     }
 
     /* Botón para cerrar el recuadro flotante */
@@ -54,7 +54,7 @@
         padding: 1rem;
         border-radius: 5px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        display: none; /* Oculto por defecto */
+        display: none;
         z-index: 1002;
     }
 </style>
@@ -67,7 +67,7 @@
             <i class="fas fa-gift me-2"></i> Detalle del Combo: <span class="text-secondary">{{ combo.nombre }}</span>
         </h2>
     </div>
-    
+
     <!-- Sección de Imágenes del Combo con Carrusel -->
     <div class="mb-5">
         <h4 class="fw-bold text-secondary mb-4">
@@ -116,7 +116,6 @@
                 <i class="fas fa-info-circle me-2 text-secondary"></i>
                 <strong>Descripción:</strong> {{ combo.descripcion }}
             </p>
-            <p class="d-none" id="combo-precio">{{ combo.precio }}</p>
             <div class="d-flex justify-content-center mt-4">
                 <p class="card-text fs-5 mb-0">
                     <i class="fas fa-dollar-sign me-2 text-success"></i>
@@ -169,12 +168,13 @@
         {% endif %}
     </div>
 
-    <!-- Botón de Volver -->
-    <div class="text-center mt-4">
-        <a href="{% url 'catalogo_servicios' %}" class="btn btn-outline-primary rounded-pill py-3 shadow-sm">
-            <i class="fas fa-arrow-left me-2"></i> Volver a Catálogo
-        </a>
-    </div>
+</div>
+<!-- Botón de Volver -->
+<div class="text-center mt-4">
+    <a href="{% url 'catalogo_servicios' %}" class="btn btn-outline-primary rounded-pill py-3 shadow-sm">
+        <i class="fas fa-arrow-left me-2"></i> Volver a Catálogo
+    </a>
+</div>
 
 </div>
 
@@ -184,6 +184,10 @@
     <button class="close-btn" onclick="cerrarFloatingBox()">&times;</button>
     <h4 class="fw-bold text-center mb-4"><i class="fas fa-check-circle me-2"></i> Confirmar Reserva</h4>
     <form id="reserva-form">
+        <div class="mb-3">
+            <label for="direccion" class="form-label">Dirección</label>
+            <input type="text" id="direccion" class="form-control" placeholder="Ingresa la dirección">
+        </div>
         <div class="mb-3">
             <label for="fecha-inicio" class="form-label">Fecha y Hora de Inicio</label>
             <input type="datetime-local" id="fecha-inicio" class="form-control">
@@ -201,25 +205,64 @@
     </form>
 </div>
 
-<!-- JavaScript para Controlar el Recuadro Flotante -->
 <script>
+    // Función para cerrar el recuadro flotante
     function cerrarFloatingBox() {
         document.getElementById('overlay').style.display = 'none';
         document.getElementById('confirmacion-box').style.display = 'none';
     }
 
+    // Abrir el recuadro flotante de confirmación
     document.querySelector('.btn-reservar').addEventListener('click', () => {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('confirmacion-box').style.display = 'block';
     });
 
+    // Evento para confirmar la reserva
     document.getElementById('btn-confirmar').addEventListener('click', () => {
-        alert('¡Combo reservado y correo enviado con éxito!');
-        cerrarFloatingBox();
+        const fechaInicio = document.getElementById('fecha-inicio').value;
+        const fechaFin = document.getElementById('fecha-fin').value;
+        const direccion = document.getElementById('direccion').value;
+        const clienteId = "{{ cliente_id }}";
+        const comboId = "{{ combo.id }}";
+        const precioPorUnidad = "{{ combo.precio }}";
+
+        if (!clienteId || !fechaInicio || !direccion) {
+            alert("Todos los campos son obligatorios.");
+            return;
+        }
+
+        const data = new FormData();
+        data.append('cliente_id', clienteId);
+        data.append('combo_id', comboId);
+        data.append('direccion', direccion);
+        data.append('fecha_hora_reserva', fechaInicio);
+        data.append('fecha_fin_reserva', fechaFin);
+        data.append('precio_por_unidad', precioPorUnidad);
+
+        fetch("{% url 'crear_alquiler' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: data
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert(result.message);
+                cerrarFloatingBox();
+            } else {
+                alert(result.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error al procesar la reserva.');
+        });
     });
 </script>
 
-<!-- Iconos de FontAwesome -->
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 {% endblock %}
 
