@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block title %}Reservas Activas{% endblock %}
 
 {% block content %}
@@ -84,6 +85,37 @@
             </tbody>
         </table>
     </div>
+
+    <!-- ============================
+            Controles de Paginación
+        ============================ -->
+    {% if reservas.has_other_pages %}
+        <nav aria-label="Paginación">
+            <ul class="pagination justify-content-center mt-4">
+                {% if reservas.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ reservas.previous_page_number }}" aria-label="Anterior">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for num in reservas.paginator.page_range %}
+                    <li class="page-item {% if reservas.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if reservas.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ reservas.next_page_number }}" aria-label="Siguiente">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
 </div>
 
 {% endblock %}
