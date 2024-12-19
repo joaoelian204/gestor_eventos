@@ -41,21 +41,20 @@ def catalogo_servicios(request):
     })
     
 
-@login_required
 def detalle_combo(request, combo_id):
     """Muestra los detalles de un combo específico."""
     combo = get_object_or_404(Combo, id=combo_id)
     imagenes = ImagenCombo.objects.filter(combo=combo)
     servicios_incluidos = combo.servicios_incluidos.all()
     
-    # Obtener el ID del cliente autenticado
-    cliente_id = request.user.id
+    # Capturar el cliente_id desde los parámetros GET
+    cliente_id = request.GET.get('cliente_id')
 
     context = {
         'combo': combo,
         'imagenes': imagenes,
         'servicios_incluidos': servicios_incluidos,
-        'cliente_id': cliente_id,  # Agregar cliente_id al contexto
+        'cliente_id': cliente_id, 
     }
     
     return render(request, 'clientes/detalle_combo.html', context)
@@ -117,6 +116,7 @@ def cambiar_contrasena_cliente(request):
             messages.success(request, 'Tu contraseña se ha actualizado exitosamente.')
 
         return redirect('perfil_cliente')
+    
     
 
 
