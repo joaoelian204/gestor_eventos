@@ -47,10 +47,14 @@ def detalle_combo(request, combo_id):
     imagenes = ImagenCombo.objects.filter(combo=combo)
     servicios_incluidos = combo.servicios_incluidos.all()
     
+    # Capturar el cliente_id desde los parámetros GET
+    cliente_id = request.GET.get('cliente_id')
+
     context = {
         'combo': combo,
         'imagenes': imagenes,
         'servicios_incluidos': servicios_incluidos,
+        'cliente_id': cliente_id,  # Agregar cliente_id al contexto
     }
     
     return render(request, 'clientes/detalle_combo.html', context)
