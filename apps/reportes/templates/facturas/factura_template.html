@@ -31,11 +31,6 @@
             padding-bottom: 20px;
         }
 
-        .header img {
-            max-height: 80px;
-            margin-bottom: 10px;
-        }
-
         .header h1 {
             margin: 0;
             font-size: 32px;
@@ -140,6 +135,7 @@
 </head>
 <body>
     <div class="factura" id="factura">
+        <!-- Encabezado -->
         <div class="header">
             <h1>{{ negocio.nombre }}</h1>
             <hr>
@@ -148,6 +144,7 @@
             <p>Correo: <a href="mailto:{{ negocio.correo }}">{{ negocio.correo }}</a></p>
         </div>
 
+        <!-- Detalles de la Factura -->
         <div class="section-title">Detalles de la Factura</div>
         <table class="datos-factura">
             <tr>
@@ -168,11 +165,12 @@
             </tr>
         </table>
 
+        <!-- Descripción del Combo o Servicio -->
         <div class="section-title">Servicios</div>
         <table class="servicios">
             <thead>
                 <tr>
-                    <th>Descripción del Servicio</th>
+                    <th>Descripción</th>
                     <th>Cantidad</th>
                     <th>Precio Unitario</th>
                     <th>Total</th>
@@ -180,7 +178,13 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>{{ reserva.servicio.titulo }}</td>
+                    {% if reserva.combo %}
+                        <td>{{ reserva.combo.nombre }}</td>
+                    {% elif reserva.servicio %}
+                        <td>{{ reserva.servicio.titulo }}</td>
+                    {% else %}
+                        <td>Reserva sin especificar</td>
+                    {% endif %}
                     <td>{{ reserva.cantidad_unidades }}</td>
                     <td>${{ precio_unitario|floatformat:2 }}</td>
                     <td>${{ reserva.costo_total|floatformat:2 }}</td>
@@ -188,10 +192,12 @@
             </tbody>
         </table>
 
+        <!-- Total -->
         <div class="total">
             Total a Pagar: ${{ total|floatformat:2 }}
         </div>
 
+        <!-- Pie de Página -->
         <div class="footer">
             <p>¡Gracias por su preferencia!</p>
             <p>
