@@ -96,7 +96,7 @@
                         <i class="fas fa-calendar-check me-2"></i> Reservar
                     </button>
                     {% else %}
-                        <a href="{% url 'detalle_combo' item.id %}" class="btn btn-info btn-lg rounded-pill px-5 shadow-sm">
+                        <a href="{% url 'detalle_combo' item.id %}?cliente_id={{ cliente.id }}" class="btn btn-info btn-lg rounded-pill px-5 shadow-sm">
                             <i class="fas fa-info-circle me-2"></i> Ver Detalles
                         </a>
                     {% endif %}
