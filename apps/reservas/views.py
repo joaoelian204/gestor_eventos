@@ -38,7 +38,7 @@ def listar_reservas(request):
 
 # Crear una reserva (alquiler) de un servicio o combo
 def crear_alquiler(request):
-    ''' 
+    '''
     Crea una nueva reserva (alquiler) de un servicio o combo. 
     Valida los datos del formulario y envía un correo de confirmación al cliente.
     '''
@@ -82,7 +82,12 @@ def crear_alquiler(request):
                     servicio = get_object_or_404(Servicio, id=servicio_id)
 
                     # Verificar si ya existe una reserva activa para el servicio
-                    if Alquiler.objects.filter(cliente=cliente, servicio=servicio, estado='en_curso', fecha_fin_reserva__gte=timezone.now()).exists():
+                    if Alquiler.objects.filter(
+                        cliente=cliente,
+                        servicio=servicio,
+                        estado__in=['en_curso'],
+                        fecha_fin_reserva__gte=timezone.now()
+                    ).exists():
                         return JsonResponse({'success': False, 'message': 'Ya tienes una reserva activa para este servicio.'})
 
                     # Calcular el costo total
@@ -103,9 +108,14 @@ def crear_alquiler(request):
                 elif combo_id:
                     combo = get_object_or_404(Combo, id=combo_id)
 
-                    # Verificar si ya existe una reserva activa para el combo
-                    if Alquiler.objects.filter(cliente=cliente, combo=combo, estado='en_curso', fecha_fin_reserva__gte=timezone.now()).exists():
-                        return JsonResponse({'success': False, 'message': 'Ya tienes una reserva activa para este combo.'})
+                    # Verificar si ya existe una reserva activa para el combo sin que la fecha fin haya pasado
+                    if Alquiler.objects.filter(
+                        cliente=cliente,
+                        combo=combo,
+                        estado__in=['en_curso'],
+                        fecha_fin_reserva__gte=timezone.now()
+                    ).exists():
+                        return JsonResponse({'success': False, 'message': 'Ya tienes una reserva activa para este combo. No puedes reservar el mismo combo hasta que finalice la reserva actual.'})
 
                     # Calcular el costo total para el combo
                     costo_total = float(combo.precio)
@@ -151,11 +161,19 @@ def crear_alquiler(request):
 
             return JsonResponse({'success': True, 'message': 'Reserva creada exitosamente.'})
 
+        # Manejo de errores específicos
+        except Cliente.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Cliente no encontrado.'})
+        except Servicio.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Servicio no encontrado.'})
+        except Combo.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Combo no encontrado.'})
+        except ValueError as e:
+            return JsonResponse({'success': False, 'message': f'Error en los datos numéricos: {e}'})
         except Exception as e:
             return JsonResponse({'success': False, 'message': f'Error inesperado: {e}'})
 
     return JsonResponse({'success': False, 'message': 'Método no permitido.'})
-
 
 # Ver detalle de una reserva
 @user_passes_test(es_dueño)
