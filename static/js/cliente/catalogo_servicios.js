@@ -100,7 +100,7 @@ function confirmarReserva() {
             alert('Reserva creada y correo enviado exitosamente.');
             window.location.reload();
         } else {
-            alert(Error: ${data.message});
+            alert(`Error: ${data.message}`);
         }
     })
     .catch(error => {
@@ -115,4 +115,3 @@ overlay.addEventListener('click', () => {
     confirmacionBox.classList.add('d-none');
     overlay.classList.add('d-none');
 });
-
