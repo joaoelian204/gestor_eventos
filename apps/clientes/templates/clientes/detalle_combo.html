@@ -204,7 +204,6 @@
         </div>
     </form>
 </div>
-
 <script>
     // Función para cerrar el recuadro flotante
     function cerrarFloatingBox() {
@@ -220,18 +219,27 @@
 
     // Evento para confirmar la reserva
     document.getElementById('btn-confirmar').addEventListener('click', () => {
-        const fechaInicio = document.getElementById('fecha-inicio').value;
-        const fechaFin = document.getElementById('fecha-fin').value;
-        const direccion = document.getElementById('direccion').value;
+        const fechaInicio = document.getElementById('fecha-inicio').value.trim();
+        const fechaFin = document.getElementById('fecha-fin').value.trim();
+        const direccion = document.getElementById('direccion').value.trim();
         const clienteId = "{{ cliente_id }}";
         const comboId = "{{ combo.id }}";
         const precioPorUnidad = "{{ combo.precio }}";
 
+        // Obtener el botón de confirmar para desactivarlo temporalmente
+        const btnConfirmar = document.getElementById('btn-confirmar');
+
+        // Desactivar el botón para evitar múltiples clics
+        btnConfirmar.disabled = true;
+
+        // Validación de campos obligatorios
         if (!clienteId || !fechaInicio || !direccion) {
             alert("Todos los campos son obligatorios.");
+            btnConfirmar.disabled = false;
             return;
         }
 
+        // Crear el objeto FormData con los datos de la reserva
         const data = new FormData();
         data.append('cliente_id', clienteId);
         data.append('combo_id', comboId);
@@ -240,6 +248,7 @@
         data.append('fecha_fin_reserva', fechaFin);
         data.append('precio_por_unidad', precioPorUnidad);
 
+        // Enviar la solicitud al servidor con fetch
         fetch("{% url 'crear_alquiler' %}", {
             method: 'POST',
             headers: {
@@ -259,6 +268,10 @@
         .catch(error => {
             console.error('Error:', error);
             alert('Ocurrió un error al procesar la reserva.');
+        })
+        .finally(() => {
+            // Rehabilitar el botón después de completar la solicitud
+            btnConfirmar.disabled = false;
         });
     });
 </script>
