@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     'apps.usuarios',
     'apps.administrador',
     'apps.dueño',
-    'apps.eventos',
     'apps.servicios',
     'apps.reservas',
     'apps.reportes',
