@@ -24,15 +24,13 @@ def es_dueño(user):
 # Listar reservas activas
 
 def listar_reservas(request):
-    # Obtener las reservas del cliente actual (suponiendo que 'request.user' tiene acceso a 'cliente')
-    cliente = request.user.cliente  # Asumiendo que tienes una relación OneToOne entre User y Cliente
-    
+    cliente = request.user.clientes
     # Obtener todas las reservas relacionadas con el cliente actual
     reservas = Alquiler.objects.filter(cliente=cliente)
     
     return render(request, 'clientes/reservas_activas.html', {'reservas': reservas})
 
-# Crear una nueva reserva
+
 def crear_alquiler(request):
     if request.method == 'POST':
         try:
