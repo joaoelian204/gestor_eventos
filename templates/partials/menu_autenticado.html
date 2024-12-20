@@ -30,6 +30,30 @@
             </a>
         </li>
 
+        <!-- Menú desplegable para Crear Reportes -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'generar_reporte' %}active{% endif %}" href="#" id="navbarCrearDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-file-alt me-1"></i> Reportes
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarCrearDropdown">
+                <li>
+                    <a class="dropdown-item {% if request.resolver_match.url_name == 'generar_reporte' %}active{% endif %}" href="{% url 'generar_reporte' %}">
+                        <i class="fas fa-chart-bar me-2 text-success"></i> Reporte de Ventas
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {% if request.resolver_match.url_name == 'reporte_usuarios' %}active{% endif %}" href="{% url 'reporte_usuarios' %}">
+                        <i class="fas fa-user-friends me-2 text-info"></i> Reporte de Clientes
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {% if request.resolver_match.url_name == 'reporte_admins_duenos' %}active{% endif %}" href="{% url 'reporte_admins_duenos' %}">
+                        <i class="fas fa-user-shield me-2 text-warning"></i> Reporte de Admins y Dueños
+                    </a>
+                </li>
+            </ul>
+        </li>
+
         <!-- Menú desplegable para Crear elementos (Combo y Servicio) -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'crear_combo crear_servicio' %}active{% endif %}" href="#" id="navbarCrearDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -133,3 +157,4 @@
         </li>
     {% endif %}
 {% endif %}
+
