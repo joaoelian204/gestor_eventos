@@ -75,7 +75,7 @@ gunicorn==21.2.0
 1. **Clonar el Repositorio**
 
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
+   git clone https://github.com/joaoelian204/gestor_eventos.git
    cd gestor_eventos-main
    ```
 
@@ -117,24 +117,3 @@ gunicorn==21.2.0
 
    Abrir [http://localhost:8000](http://localhost:8000) en el navegador.
 
----
-
-## Capturas de Pantalla
-
-- **Imagen Principal**:  
-  ![Vista Principal](https://i.imgur.com/ejemplo_principal.png)
-
-- **Interfaz de Administrador**:  
-  ![Administrador](https://github.com/usuario/repositorio/blob/main/static/images/admin.png)
-
-- **Interfaz de Cliente**:  
-  ![Cliente](https://res.cloudinary.com/tu_cuenta/image/upload/v123456789/cliente.png)
-
-- **Interfaz de Dueño**:  
-  ![Dueño](https://i.imgur.com/ejemplo_dueño.png)
-
----
-
-## Licencia
-
-Este proyecto está licenciado bajo la **MIT License**.
