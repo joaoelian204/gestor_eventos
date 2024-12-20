@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Ventas</title>
+    <style>
+        @page {
+            size: landscape; /* Define la orientación horizontal */
+            margin: 20px;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fff;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .report-details {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 8px;
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #e0e0e0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h2>Reporte de Ventas</h2>
+    <p class="report-details">
+        Generado el: <strong>{{ fecha_generacion }}</strong><br>
+        {% if fecha_inicio and fecha_fin %}
+            Desde: <strong>{{ fecha_inicio }}</strong> hasta <strong>{{ fecha_fin }}</strong>
+        {% endif %}
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Servicio/Combo</th>
+                <th>Dirección</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Estado</th>
+                <th>Costo Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reserva in reservas %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ reserva.cliente.nombres }} {{ reserva.cliente.apellidos }}</td>
+                    <td>
+                        {% if reserva.servicio %}
+                            {{ reserva.servicio.titulo }}
+                        {% elif reserva.combo %}
+                            {{ reserva.combo.nombre }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ reserva.direccion }}</td>
+                    <td>{{ reserva.fecha_hora_reserva|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        {% if reserva.fecha_fin_reserva %}
+                            {{ reserva.fecha_fin_reserva|date:"Y-m-d H:i" }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ reserva.estado|capfirst }}</td>
+                    <td>${{ reserva.costo_total|floatformat:2 }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; font-weight: bold; color: #e74c3c;">
+                        No se encontraron reservas.
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="7" style="text-align: right;">Total de Ventas:</td>
+                <td>${{ total_ventas|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>&copy; {{ fecha_generacion|date:"Y" }} - Reporte generado automáticamente por el sistema de reservas.</p>
+    </div>
+</body>
+</html>
+
+
