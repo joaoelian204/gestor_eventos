@@ -2,13 +2,14 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import ValidationError
+from django.core.validators import EmailValidator, RegexValidator, URLValidator
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import Negocio
 
 
-# Helper: Verifica si el usuario es administrador
+#Verifica si el usuario es administrador
 def es_administrador(user):
     """
     Verifica si el usuario autenticado tiene el rol de administrador.
@@ -16,33 +17,80 @@ def es_administrador(user):
     return user.is_authenticated and hasattr(user, 'rol') and user.rol == 'administrador'
 
 
-# CONFIGURACIÓN DEL NEGOCIO
+# Validadores personalizados
+nombre_validator = RegexValidator(
+    regex=r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$',
+    message="El nombre solo puede contener letras y espacios."
+)
+telefono_validator = RegexValidator(
+    regex=r'^\+?\d{7,15}$',
+    message="El número de teléfono debe ser válido, puede incluir el código de país."
+)
+url_validator = URLValidator(message="Debe ser una URL válida.")
+email_validator = EmailValidator(message="Debe ser un correo electrónico válido.")
+
 @user_passes_test(es_administrador, login_url='login', redirect_field_name=None)
 def configuracion_negocio(request):
     negocio, _ = Negocio.objects.get_or_create(id=1)
 
+    # Almacenamos si hay errores para prevenir la actualización en caso de errores
+    errors = []
+
     if request.method == 'POST':
-        negocio.nombre = request.POST.get('nombre', negocio.nombre)
-        negocio.direccion_principal = request.POST.get('direccion_principal', negocio.direccion_principal)
-        negocio.direccion_secundaria = request.POST.get('direccion_secundaria', negocio.direccion_secundaria)
-        negocio.telefono = request.POST.get('telefono', negocio.telefono)
-        negocio.correo = request.POST.get('correo', negocio.correo)
+        # Validar y actualizar campos individuales
+        nombre = request.POST.get('nombre', negocio.nombre)
+        try:
+            nombre_validator(nombre)
+            negocio.nombre = nombre
+        except ValidationError as e:
+            errors.append(f"Nombre: {e.message}")
+
+        direccion_principal = request.POST.get('direccion_principal', negocio.direccion_principal)
+        negocio.direccion_principal = direccion_principal
+
+        direccion_secundaria = request.POST.get('direccion_secundaria', negocio.direccion_secundaria)
+        negocio.direccion_secundaria = direccion_secundaria
+
+        telefono = request.POST.get('telefono', negocio.telefono)
+        try:
+            telefono_validator(telefono)
+            negocio.telefono = telefono
+        except ValidationError as e:
+            errors.append(f"Teléfono: {e.message}")
+
+        correo = request.POST.get('correo', negocio.correo)
+        try:
+            email_validator(correo)
+            negocio.correo = correo
+        except ValidationError as e:
+            errors.append(f"Correo: {e.message}")
 
         # Procesar redes sociales
-        redes_sociales = {
-            "facebook": request.POST.get('redes_sociales[facebook]', negocio.redes_sociales.get('facebook', '')),
-            "instagram": request.POST.get('redes_sociales[instagram]', negocio.redes_sociales.get('instagram', '')),
-            "twitter": request.POST.get('redes_sociales[twitter]', negocio.redes_sociales.get('twitter', ''))
-        }
+        redes_sociales = {}
+        for red in ['facebook', 'instagram', 'twitter']:
+            url = request.POST.get(f'redes_sociales[{red}]', negocio.redes_sociales.get(red, ''))
+            try:
+                if url:  # Validar solo si se proporciona una URL
+                    url_validator(url)
+                redes_sociales[red] = url
+            except ValidationError as e:
+                errors.append(f"{red.capitalize()}: {e.message}")
+
         negocio.redes_sociales = redes_sociales
 
         # Procesar logo
         if 'logo' in request.FILES:
             negocio.logo = request.FILES['logo']
 
-        # Validar y guardar
+        # Si hay errores, no actualizamos el negocio y mostramos los errores
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return render(request, 'administrador/configuracion.html', {'negocio': negocio})
+
+        # Validar y guardar solo si no hay errores
         try:
-            negocio.full_clean()  # Valida todos los campos
+            negocio.full_clean()  # Validaciones del modelo
             negocio.save()
             messages.success(request, "Configuración actualizada exitosamente.")
         except ValidationError as e:
@@ -56,15 +104,14 @@ def configuracion_negocio(request):
 
     return render(request, 'administrador/configuracion.html', {'negocio': negocio})
 
-
 @user_passes_test(es_administrador, login_url='login', redirect_field_name=None)
 def vista_previa_cliente(request):
     """
     Muestra la vista previa de los datos del negocio.
     """
-    negocio = Negocio.objects.first()  # Asumimos que siempre habrá un negocio registrado
+    negocio = Negocio.objects.first()
     if negocio.redes_sociales is None:
-        negocio.redes_sociales = {}  # Asegurarnos de que redes_sociales no sea None
+        negocio.redes_sociales = {}
     return render(request, 'administrador/vista_previa.html', {'negocio': negocio})
 
 
