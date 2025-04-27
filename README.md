@@ -2,6 +2,8 @@
 # Sistema de Gestión de Eventos
 
 Este es un sistema de gestión de eventos dinámico, diseñado para permitir a empresas gestionar sus reservas de servicios y alquileres de forma eficiente. Incluye diferentes niveles de usuario (Administrador, Cliente, Dueño) y funcionalidades adaptadas a cada rol.
+![Gestión de Eventos](gestion_eventos.png)
+
 
 ## Tecnologías Utilizadas
 
